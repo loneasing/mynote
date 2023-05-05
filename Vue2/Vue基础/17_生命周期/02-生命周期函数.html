@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>生命周期函数</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <div id='root'>
+        <h3 v-text="n"></h3>
+        <h3>当前的n值是：{{n}}</h3>
+        <button @click="add">点我n+1</button>
+        <button @click="bye">点我销毁vm</button>
+        <!-- 在2.7版本之前，销毁vm后js原生的事件还能生效，2.7以后销毁vm后所有的事件都会被销毁。 -->
+    </div>
+</body>
+
+<script type='text/javascript'>
+   new Vue({
+        el: '#root',
+        /* template配置项的作用是创建一个容器，这个容器会替换掉el配置项绑定的容器，
+        注意如果html代码要分行写需要加上``包裹html代码(模板字符串)，
+        并且template中只能有一个根节点，如果有多个元素需要用一个元素包裹起来。
+        创建Vue实例时el配置项绑定的元素虽然可能会被template的内容替换，但是不能不配置el，而创建组件时绝对不能写el配置项。
+        */
+        /*  template:`
+         	<div>
+         		<h2>当前的n值是：{{n}}</h2>
+         		<button @click="add">点我n+1</button>
+         	</div>`
+        , */
+        data: {
+            n: 1
+        },
+        methods: {
+            add() {
+                console.log('add')
+                this.n++
+            },
+            bye() {
+                console.log('bye')
+                this.$destroy()
+            }
+        },
+        watch: {
+            n() {
+                console.log('n变了')
+            }
+        },
+
+        // 需要注意的是：生命周期函数是在对应的阶段完成之后才调用，而不是调用该函数该阶段才开始。
+
+        /**
+         * beforeCreate阶段：
+         * 初始化生命周期、事件，但数据收集、数据代理还未开始 (vm中还没有 _data 属性，也没有代理属性)。
+         * 此时无法通过Vue实例访问到 data 中的数据、methods中的方法等。
+         * */
+        beforeCreate() {
+            console.log('beforeCreate')
+            console.log(this._data)   // 此时还没有_data属性，输出undefined
+            debugger    // 断点调试，要打开开发者模式才能生效
+        },
+        /**
+         * created阶段：
+         * 数据收集、数据代理、数据劫持已完成 (vm中有了 _data 属性，并且进行了数据代理和数据劫持)。
+         * 此时可以通过Vue实例访问data中的数据、methods中的方法等。
+         * */
+        created() {
+            console.log('created')
+        },
+        /**
+         * beforeMount阶段：
+         * Vue解析模板生成虚拟DOM，并存储到了 $el 变量中，但还未生成真实DOM挂载到页面中。
+         * 此时对DOM的所有操作最终都不生效，因为虚拟DOM已经生成了并存储到 $el 变量中了，此时的对DOM的操作不会修改虚拟DOM。
+         * */
+        beforeMount() {
+            console.log('beforeMount')
+        },
+        /**
+         * mounted阶段：
+         * 将 $el 中存储的虚拟DOM转为真实DOM挂载到页面中。
+         * 此时页面上呈现的是经过Vue解析过的DOM，对DOM的操作均会生效。
+         * 一般在 mounted 方法中执行：开启定时器、发送网络请求、订阅消息、绑定自定义事件等初始化操作。
+         * */
+        mounted() {
+            console.log('mounted')
+        },
+        /**
+         * beforeUpdate阶段：
+         * 将新数据收集到 _data 中，进行了数据代理、数据劫持等操作，并生成了新的虚拟DOM，但是还没有比对(diff算法)。
+         * 此时 data 的数据是新的，但是页面上显示的数据还是旧的。即页面未和数据保持同步。
+         * */
+        beforeUpdate() {
+            console.log('beforeUpdate')
+        },
+        /**
+         * updated阶段：
+         * 将新的虚拟DOM与旧的虚拟DOM进行比较，生成真实DOM挂载到页面完成页面更新。
+         * 此时 data 的数据是新的，页面上显示的数据也是新的。即页面和数据保持同步。
+         * */
+        updated() {
+            console.log('updated')
+        },
+        /**
+         * beforeDestroy阶段：
+         * 当 $destroy()函数被调用时，进入 beforeDestroy 阶段。
+         * 此时Vue实例中的 data、methods、指令等等都可用，但是操作数据不会触发更新流程了。
+         * 一般在 beforeDestroy()中关闭计时器、取消订阅消息、解绑自定义阶段等收尾操作。
+         * */
+        beforeDestroy() {
+            console.log('beforeDestroy')
+        },
+        /**
+         * destroyed阶段：
+         * Vue实例解除所有绑定，所有的事件监听器被移除，所有的子实例也被销毁。
+         * */
+        destroyed() {
+            console.log('destroyed')
+        },
+    })
+</script>
+
+</html>

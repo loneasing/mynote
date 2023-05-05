@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模板语法</title>
+    <!-- 导入Vue -->
+    <script type="text/javascript" src="../js/vue.js"></script>
+</head>
+
+<body>
+    <!--
+        Vue模板语法有两大类：
+            1. 插值语法
+                - 功能：用于解析标签体内容
+                - 写法：{{xxx}}，xxx是一个js表达式
+            2. 指令语法
+                - 功能：用于解析标签（包括标签属性、标签体内容、绑定事件等）
+                - 举例：v-bind指令用来绑定标签的属性，其写法为【v-bind:标签属性="xxx"】，该指令还可以简写成【:标签属性="xxx"】，xxx同样是js表达式
+                - 说明：Vue中有很多的指令，且形式都是“v-”开头，后续会慢慢学到。
+
+        注意点：
+            - Vue对undefined的值进行了处理，在页面中值为undefined的数据会用空串显示。
+            - 获取data中对象中不存在的属性，返回undefined。
+            - 直接获取data中不存在的属性，会报错。
+    -->
+
+
+    <!-- 创建一个容器 -->
+    <div id="root">
+
+        <h1>插值语法</h1>
+        <h3>Hello，{{name}}</h3>
+        <h3>Hello，{{myname}}</h3> 
+        <h3>Hello，{{bilibili.hello}}</h3> <!-- 获取data中对象中不存在的属性，值为undefined，但不会显示到页面上，只会显示空串 -->
+        <!-- <h3>Hello，{{hello}}</h3> 获取data中不存在的属性，直接报错 -->
+        <hr>
+
+        <h1>指令语法</h1>
+        <!--  v-bind用来解析标签中的属性，可以解析自定义属性-->
+        <a v-bind:href="url" v-bind:myname="myname">百度一下，你就知道</a><br> <!--这里自定义了一个myname属性-->
+        <!--  v-bind可以缩写成一个冒号: -->
+        <a :href="bilibili.url.toUpperCase()">点我跳转到{{bilibili.name}}</a> <!--检查元素可以发现网址都变成了大写，所以被绑定的标签的值被当作一个js表达式处理了-->
+    </div>
+</body>
+<script type="text/javascript">
+
+    // 创建Vue实例
+    new Vue({
+        el: '#root',
+        data: {
+            name: 'Vue',
+            myname: 'loneasing',
+            url: 'https://www.baidu.com',
+            // data中属性的值也可以是一个对象，通过对象.的方式获取对应的值
+            bilibili: {
+                name: '哔哩哔哩',
+                url: 'https://bilibili.com'
+            }
+        }
+    })
+
+</script>
+
+</html>

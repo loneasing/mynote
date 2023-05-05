@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>回顾获取焦点操作</title>
+    <style>
+        .demo {
+            background-color: pink;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="btn">点我创建一个输入框</button>
+    <script type="text/javascript">
+        const btn = document.getElementById('btn')
+        btn.onclick = () => {
+            // 创建一个元素
+            const input = document.createElement('input')
+
+            // 让创建的元素获取焦点
+            input.focus()
+            // 操作创建的元素的父元素
+            console.log(input.parentElement)    // 直接打印null，更别提操作它的父元素了
+            //input.parentElement.style.backgroundColor = 'skyblue' //报错
+            /*
+                很明显该元素只是创建出来了，并还没有添加到页面上，所以无法让该元素获取焦点，
+                也无法获取到该元素的父元素，需要把该操作放到元素添加到页面后执行。
+                但是有些操作是可以在元素添加到页面之前执行的，比如给该元素添加类名、设置value值、绑定事件等操作。
+            */
+            input.className = 'demo'
+            input.value = 99
+            input.onclick = () => { alert(1) }
+
+            // 将元素添加到页面
+            document.body.appendChild(input)
+
+            input.parentElement.style.backgroundColor = 'skyblue' //这类的操作就只能在页面已添加到页面后才能执行，否则报错
+
+        }
+    </script>
+</body>
+
+</html>

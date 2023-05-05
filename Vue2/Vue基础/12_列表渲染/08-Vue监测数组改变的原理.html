@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Vue监测数组改变的原理</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!--
+        Vue监测数组的原理：
+            Vue考虑到使用了push()、pop()、shift()、unshift()、splice()、sort()、reverse()方法时会更改原数组，
+            所以对这些方法进行了包装，只要调用了Vue包装的同名的方法就会被认为对数组进行了修改，就会被Vue监测到。
+    -->
+    <div id='root'>
+        <h3>人员列表</h3>
+        <button @click="updateMaDongMei">更新马冬梅的信息</button>
+        <button @click="addPerson">点击添加刘德华</button>
+        <ul>
+            <li v-for="(p,index) of persons" :key="p.id">
+                {{p.name}}-{{p.age}}-{{p.sex}}
+            </li>
+        </ul>
+        <h3>爱好列表</h3>
+        <button @click="updateHobby">无效更新爱好列表</button>
+        <button @click="updateHobby2">更新爱好列表</button>
+        <ul>
+            <li v-for="(h,index) in hobbies" :key="index">
+                {{h}}
+            </li>
+        </ul>
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            persons: [
+                { id: '001', name: '马冬梅', age: 30, sex: '女' },
+                { id: '002', name: '周冬雨', age: 31, sex: '女' },
+                { id: '003', name: '周杰伦', age: 18, sex: '男' },
+                { id: '004', name: '温兆伦', age: 19, sex: '男' }
+            ],
+            hobbies: ['sing', 'dance', 'rap', 'basketball']
+        },
+        methods: {
+            updateMaDongMei() {
+
+                // 直接修改数组元素的属性可以完成页面更新 
+                // this.persons[0].name = '马老师' 
+                // this.persons[0].age = 50 
+                // this.persons[0].sex = '男'
+
+                /* 
+                    通过修改数组中对象的属性可以被Vue检测到，因为前面提到过任何对象无论藏的有多深，Vue都会为其属性设置getter和setter。
+                    但是根据数组索引获取到的数组元素是没有对应的getter和setter的，Vue无法检测到其是否修改。
+                    简而言之数组元素是对象，则对象的属性有getter和setter，但是数组元素本身没有getter和setter。
+                    所以数组里面的每一个元素不是靠getter和setter进行监视的 */
+
+                // 通过索引修改数组元素不能被Vue监测到
+                // this.persons[0] = { id: '001', name: '马老师', age: 50, sex: '男' }
+
+                // 使用包装的数组方法更新数组元素可以被Vue监测到
+                console.log(this.persons.splice(0, 1, { id: '001', name: '马老师', age: 50, sex: '男' }))
+
+                /*
+                    splice：
+                        splice(a,b):表示删除数组下标a开始往后的b个元素，并将被删除下来的元素作为新数组返回。
+                        splice(a,b,c):表示用一个c元素替换掉数组下标a开始往后的b个元素，并将被替换(删除)的元素作为新数组返回。
+                */
+            },
+            addPerson() {
+                this.persons.push({ id: '005', name: '刘德华', age: 60, sex: '男' })
+            },
+            updateHobby() {
+                // 直接通过索引值修改数组元素不能被Vue监测到
+                this.hobbies[3] = 'football' // 查看控制台可以发现数据已经改了，但是Vue没有检监测到，所以页面没有更新
+
+            },
+            updateHobby2() {
+                // 通过splice()方法修改数组可以被Vue监测到
+                this.hobbies.splice(1, 1, 'breaking')
+                // 通过Vue.set()或vm.$set()修改数组也可以被Vue监测到
+                Vue.set(this.hobbies, 2, 'pop') //2表示数组的第三个元素
+            }
+        }
+    })
+
+</script>
+
+</html>

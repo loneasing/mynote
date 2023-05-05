@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVVM模型</title>
+    <script type="text/javascript" src="../js/vue.js"></script>
+</head>
+
+<body>
+    <!-- 
+    			MVVM模型
+    				M：模型(Model) ：data中的数据
+    			    V：视图(View) ：模板代码
+    				VM：视图模型(ViewModel)：Vue实例
+
+    			观察发现：
+    				data中所有的属性，最后都出现在了vm身上。
+    				vm身上所有的属性 及 Vue原型上所有属性，在Vue模板中都可以直接使用。
+    		-->
+    <!-- 创建一个容器 -->
+    <div id="root"> <!--这个容器就是一个View-->
+        <h3>名字：{{name}}</h3>
+        <h3>地址：{{address}}</h3>
+
+        <!-- Vue实例中所有的数据都可以在容器中获取 -->
+        <h3>{{_data}}</h3> <!--data中的所有数据-->
+        <h3>{{$options}}</h3> 
+    </div>
+</body>
+<script type="text/javascript">
+    const vm = new Vue({   // 这个Vue实例就是一个ViewModel
+        el: '#root',
+        data: { // 这个数据就是一个Model
+            name: 'Esing',
+            address:'江西'
+        }
+    });
+
+    console.log(vm)
+</script>
+
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>条件渲染</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+    	条件渲染：
+    		1.v-if ：通过移除或添加元素来控制元素的显示与隐藏。
+    			写法: (1) v-if="条件表达式" 
+    			      (2) v-else-if="条件表达式"
+    			      (3) v-else="条件表达式"
+                特点：条件表达式为真则显示该元素，为假则从DOM移除该元素，移除后无法获取到该元素。
+    			注意：v-if可以和v-else-if、v-else一起使用，但要求结构不能被“打断”。
+                适用于：切换频率较低的场景，因为频繁添加和删除元素节点很耗费资源。
+
+    		2.v-show：: 通过控制 display 样式来控制元素显示/隐藏
+    			写法：v-show="条件表达式"
+    			特点：条件表达式为假，Vue为元素添加样式display:none将该元素隐藏，隐藏后还可以获取该元素。
+                适用于：切换频率较高的场景。
+    			
+    	    备注：只要页面中模板的数据发生了变化，Vue就会重新解析模板。
+     -->
+    <div id='root'>
+        <h2>当前n的值：{{n}}</h2>
+        <button @click="n++">n加1</button>
+
+        <!-- 使用v-show做条件渲染 -->
+        <h3 v-show="false">Hi, v-show </h3> <!-- 条件表达式为假，页面不显示此元素-->
+        <h3 v-show="1 === 1">Hello, v-show</h3> <!-- 条件表达式为真，显示该元素-->
+
+        <!-- 使用v-if做条件渲染 -->
+        <h3 v-if="1 === 1">Hi, v-if</h3> <!-- 条件表达式为假则页面不显示此元素，原理是删除了该元素 -->
+        <h3 v-if="isShow">Hello, v-if</h3>
+        <button @click="show">显示与隐藏</button><br><br> <!-- 通过修改条件表达式的值，来显示和隐藏元素 -->
+
+        <!--  v-if和v-else-if和v-else搭配使用 -->
+        <!-- 注意这些语句必须紧挨在一起，中间不能有其他语句，否则报错 -->
+        <div v-if="n === 1">Angular</div> <!--如果n全等于1，则显示此元素，否则执行下一语句-->
+        <div v-else-if="n === 2">React</div> <!--如果n全等于2，则显示此元素，否则执行下一语句-->
+        <div v-else-if="n === 3">Vue</div> <!--如果n全等于3，则显示此元素，否则执行下一语句-->
+        <div v-else>哈哈</div> <!--如果以上条件都不满足，则显示本元素，v-else命令中不需要表达式-->
+
+        <!-- v-if与template的配合使用 -->
+        <!-- 这样提高了效率，免去了为每一个元素添加判断的操作 -->
+        <!-- Vue解析完模板后，template元素会被移除，其内部元素仍然保留，这样可以保证页面结构没有被破坏 -->
+        <template v-if="n === 1"> <!-- n全等于1，则显示template中的元素，否则移除template标签中的内容-->
+            <h3>你好</h3>
+            <h3>中国</h3>
+            <h3>江西</h3>
+        </template>
+
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            n: 0,
+            isShow: true
+        },
+        methods: {
+            show() {
+                if (this.isShow == true) {
+                    this.isShow = false
+                } else this.isShow = true
+            }
+        },
+    });
+</script>
+
+</html>

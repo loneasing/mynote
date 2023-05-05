@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>el和data的两种写法</title>
+    <script type="text/javascript" src="../js/vue.js"></script>
+</head>
+
+<body>
+    <!-- 
+    	data与el的2种写法：
+    		- el有2种写法：
+    			(1) new Vue时候配置el属性。
+    			(2) 先创建Vue实例，随后再通过vm.$mount('#root')指定el的值。
+    		- data有2种写法：
+    			(1) 对象式
+    			(2) 函数式
+    			如何选择：目前哪种写法都可以，以后学习到组件时，data必须使用函数式，否则会报错。
+    		- 一个重要的原则：
+    			由Vue管理的函数，一定不要写箭头函数，一旦写了箭头函数，this就不再是Vue实例了。
+    -->
+
+
+    <div id="one">
+        <h3>{{name}}</h3>
+    </div>
+
+    <div id="two">
+        <h3>{{name}}</h3>
+    </div>
+
+</body>
+<script type="text/javascript">
+
+    new Vue({
+        /* el的第一种写法：配置属性值 */
+        el: '#one',
+        /* data的第一种写法：对象式*/
+        data: {
+            name: 'lonesing'
+        }
+    });
+
+    const v = new Vue({ // 创建Vue实例，并用一个变量接收（const声明的变量不可变（引用类型数据地址不变即可））
+        /* data第二种写法：使用函数式 */
+        // ①匿名函数 
+        // data:function(){
+        //     console.log(this)   // 这个this指data函数的调用者，即实例对象v
+        //      return {           // 以对象的形式返回函数的值
+        //         name: 'loneasing'    
+        //     }
+        // }
+
+        // ②普通函数 
+        data() {
+            console.log(this)   // 这个this指data函数的调用者，即实例对象v
+            return {
+                name: 'loneasing'
+            }
+        }
+
+        // ③箭头函数 
+        // data:() => {   
+        //     console.log(this)   // 如果使用箭头函数的形式，则这个this指的是window对象，因为箭头函数没有this，然后往上一级作用域寻找this
+        //     return {
+        //         name:'loneasing'
+        //     }
+        // }
+    });
+    /* el第二种写法：通过Vue实例调用原型对象中的mount方法挂载指定容器*/
+    //v.$mount('#two') // 参数为css选择器
+
+    // 使用el第二种写法可以搭配setInterval()函数让数据延迟加载
+    setInterval(() => {
+        v.$mount('#two')
+    }, 3000);   // 3秒后加载数据
+
+    /*
+        v1是一个实例对象，每个实例对象都有一个__proto__属性，该属性指向构造函数Vue中的原型对象prototype，即__proto__等价于prototype，
+        所以实例对象可以直接调用原型对象中的属性或方法，上面使用的mount()方法就是构造函数中原型对象的方法。
+    */
+    console.log(v)  // v是实例对象
+    console.log(Vue) //Vue是构造函数
+</script>
+
+</html>

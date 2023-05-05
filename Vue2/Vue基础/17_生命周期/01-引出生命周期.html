@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>引出生命周期</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+    	生命周期：
+    			1.又名：生命周期回调函数、生命周期函数、生命周期钩子。
+    			2.是什么：Vue在关键时刻帮我们调用的一些特殊名称的函数。
+    			3.生命周期函数的名字不可更改，但函数的具体内容是程序员根据需求编写的。
+    			4.生命周期函数中的this指向是vm 或 组件实例对象。
+    -->
+    <div id="root">
+        <h2 :style="{opacity}">欢迎学习Vue</h2>
+        <!-- style的值是一个对象，而自定义的透明度变量和style中透明度属性同名即{opacity:opacity}
+             这种情况就可以用对象的简写形式：直接写opacity -->
+    </div>
+</body>
+
+<!-- 需求：将一个元素的透明度循环往复的从1变到0，使用定时器完成，并且希望定时器与Vue实例融为一体
+         
+        方案一：将定时器方法写在methods属性中并绑定定时器方法（不可取）
+            因为定时器中使用了data中的数据，data中的数据一经改变会重新解析模板，然后会再次调用定时器方法。
+            这样就相当于开启了很多个定时器，并且以指数爆炸的形式增长。
+
+        方案二：将定时器写在mounted()函数中（可取）
+            mounted()函数是生命周期中的一个函数，在Vue完成数据初始化并解析完模板且将真实DOM挂载到页面后，调用mounted函数。
+            这个过程整个生命周期只会执行一次，接下来对页面的操作都是在mounted执行完之后进行的。因此这样只会开启一个定时器。
+
+        注意：mounted()是Vue配置对象中的方法，它和data属性是平级的。
+        
+-->
+
+<script type='text/javascript'>
+    new Vue({
+        el: '#root',
+        data: {
+            opacity: 1
+        },
+        methods: {
+            // 不仅可取还需要绑定事件触发
+            timer() {
+                setInterval(() => {
+                    vm.opacity -= 0.01
+                    if (vm.opacity <= 0) vm.opacity = 1
+                }, 16)
+            }
+        },
+        //Vue完成模板的解析并把初始的真实DOM元素放入页面后（挂载完毕）调用mounted
+        mounted() {
+            console.log('mounted', this)
+            setInterval(() => {
+                this.opacity -= 0.005
+                if (this.opacity <= 0) this.opacity = 1 // 注意js中小数加减法不可能等于0，只是几乎接近，所以这里不能用等于号
+            }, 16)
+        },
+    })
+
+	//通过外部的定时器实现（不推荐）
+    /* setInterval(() => {
+            vm.opacity -= 0.01
+            if (vm.opacity <= 0) vm.opacity = 1
+    }, 16) */
+</script>
+
+</html>

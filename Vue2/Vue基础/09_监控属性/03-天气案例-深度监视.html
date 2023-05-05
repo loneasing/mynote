@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>天气案例-深度监视</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+            开启深度监视：deep:true ，默认是false
+            开启深度监控表示监控对象内部值的变化，设为false在监控对象时，监控的是对象的地址的变化。
+
+    		备注：(1) Vue自身可以监测对象内部值的改变，但Vue提供的watch默认不可以！配置deep:true可以监测对象内部值改变。
+    		     (2) 使用watch时根据数据的具体结构，决定是否采用深度监视。
+     -->
+
+    <!-- 准备好一个容器-->
+    <div id='root'>
+
+        <h2>今天天气很{{info}}</h2>
+        <button @click="changeWeather">切换天气</button>
+        <hr>
+
+        <h3>a的值是:{{numbers.a}}</h3>
+
+        <!-- 简答的代码可以直接绑定在事件后面，当然复杂的也可以写，只是不推荐 -->
+        <button @click="numbers.a++">点我让a+1</button>
+        <h3>b的值是:{{numbers.b}}</h3>
+        <button @click="numbers.b++">点我让b+1</button>
+
+        <!-- 如果没有开启深度监视，则需要修改numbers的地址才能够监视到numbers发生了修改 -->
+        <button @click="numbers={a:666,b:888}">修改numbers的地址</button>
+
+        <!-- Vue自身可以监测对象内部值的改变 -->
+        <h3>{{numbers.c.d.e}}</h3> <!--可以获取到内部的值-->
+    
+    </div>
+</body>
+
+<script type='text/javascript'>
+
+    const vm = new Vue({
+        // 元素项
+        el: '#root',
+        // 数据项
+        data: {
+            isHot: true,
+            numbers: {
+                a: 1,
+                b: 1,
+                c: {
+                    d: {
+                        e: 100
+                    }
+                }
+            }
+        },
+        // 计算属性项
+        computed: {
+            info() {
+                return this.isHot ? '炎热' : '凉爽'
+            }
+        },
+        // 方法项
+        methods: {
+            changeWeather() {
+                this.isHot = !this.isHot
+            }
+        },
+        // 监视项
+        watch: {
+            isHot: { //监视isHot属性
+                immediate: true,
+                handler(newValue, oldValue) {
+                    console.log('isHot被修改了：' + oldValue + "=>" + newValue)
+                }
+            },
+
+            //监视多级结构中某个属性的变化
+            'numbers.a':{   // 注意这种多级结构要加引号
+                handler(){
+                    console.log('a被改变了')
+                }
+            }, 
+
+            // 监听numbers的变化
+            numbers: {
+                deep: true,  // 开启深度监视
+                handler() {  // 只要numbers发生了变化就自动调用handler方法
+                    console.log('number值发生了改变')
+                }
+            }
+        }
+    });
+    
+</script>
+
+</html>

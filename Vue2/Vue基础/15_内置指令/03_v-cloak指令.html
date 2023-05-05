@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>v-cloak指令</title>
+    
+</head>
+
+<body>
+    <!-- 
+    		v-cloak指令（没有值）：
+    				1.本质是一个特殊属性，Vue实例创建完毕并接管容器后，会删掉v-cloak属性。
+    				2.使用css配合v-cloak可以解决网速慢时页面展示出{{xxx}}的问题。
+
+            使用步骤：
+                    1.添加属性选择器样式[v-cloak]{display:none}
+                    2.给可能会提前加载的元素添加v-cloak属性。
+
+            说明：
+                有时候引入的外部js文件时有延时，导致页面加载处于等待中，这就是js阻塞。
+                但是js文件还可以在body标签中的最后一行引入(当然很少这样引入)，这样会导致在引入文件之前的元素没有被渲染就加载到页面中。例如{{name}}
+                可以给这些元素添加v-cloak属性先隐藏起来，等到Vue实例创建后(此时文件肯定引入成功)会把该属性删除，这样元素又显示出来了。
+    -->
+    <div id='root'>
+        <h3 v-cloak>hello {{name}}</h3>
+    </div>
+    <script type='text/javascript' src='../js/vue.js'></script> <!-- 在body最后一行引入js文件 （这里就不演示延时加载了）-->
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            name: 'Esing',
+        }
+    });
+</script>
+
+</html>

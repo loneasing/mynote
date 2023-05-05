@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>自定义指令</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+    自定义指令：
+        自定义指令声明在配置项directions中，可以以对象的形式声明，也可以以函数的形式声明。
+    	定义语法：
+    		(1) 局部指令：
+    			- 对象形式：  new Vue({directives:{ 指令名:配置对象 }})
+                - 函数形式：  new Vue({directives:{ 指令名(){} }}) ，这种形式只默认配置了bind()和update()函数。
+    		(2) 全局指令：  Vue.directive('指令名',配置对象) 或者  Vue.directive('指令名',function(){})，区别和上述一致。
+
+    		配置对象中常用的3个回调函数：
+    				(1) bind：指令与元素成功绑定时调用。
+    				(2) inserted：指令所在元素被插入页面时调用。
+    				(3) update：指令所在模板结构被重新解析时调用
+                    每个函数都会接收到两个参数，第一个参数为绑定的元素；第二个参数为绑定的相关信息，包括绑定的值value。
+    	注意：
+    		(1) 指令定义时不加v-，但使用时要加v-；
+    		(2) 指令名如果是多个单词组合(比如bigNumber)，要使用kebab-case命名方式，即big-number，并且在声明的时候要加引号。
+
+        下面做两个需求：
+    	需求1：定义一个v-fbind指令，和v-bind功能类似，但可以让其所绑定的input元素默认获取焦点。
+        需求2：定义一个v-big指令，和v-text功能类似，但会把绑定的数值变成原来的10倍。
+    -->
+    <div id="root">
+        
+        <input type="text" v-fbind:value="n">
+        <button @click="n++">点我n+1</button>
+
+        <h3>当前的n值是：<span v-text="n"></span> </h3>
+        <h3>放大10倍后的n值是：<span v-big="n"></span> </h3>
+        
+    </div>
+</body>
+
+<script type='text/javascript'>
+    //定义全局指令
+    /* Vue.directive('fbind',{
+        bind(element,binding){
+            element.value = binding.value
+        },
+        inserted(element,binding){
+            element.focus()
+        },
+        update(element,binding){
+            element.value = binding.value
+        }
+    }) */
+
+    new Vue({
+        el: '#root',
+        data: {
+            n: 1
+        },
+        // 自定义指令项
+        directives: {
+            // 对象形式定义一个指令
+            fbind: {
+                //指令与元素成功绑定时执行
+                bind(element, binding) {
+                    element.value = binding.value
+                },
+                //指令所在元素被插入页面时执行
+                inserted(element, binding) {
+                    element.focus() // 让绑定的元素自动获得焦点，元素被添加到页面就获得焦点只能写在inserted()函数中
+                },
+                //指令所在的模板被重新解析时执行
+                update(element, binding) {
+                    element.value = binding.value
+                    // element.focus() 解析后获得焦点
+                }
+            },
+            /* bind()和update()函数执行的功能基本是一致的，它们经常成对出现，
+            所以就有了简写的形式：写成一个以指令名命名的函数，这个函数不包括inserted()的功能。*/
+
+            // 函数形式定义一个指令
+            /* 'big-number'(element,binding){}  //这种指令名记得加引号 */
+
+            // 这种形式只默认配置了bind()和update()函数
+            big(element, binding) {    // 第一个参数为绑定的元素；第二个参数为绑定的相关信息，包括绑定的值value。
+                console.log(binding, this) // 注意此处的this是window
+                // 操作DOM元素
+                element.innerText = binding.value * 10  // binding.value表示获取指令绑定的值
+            },
+        }
+    })
+</script>
+
+</html>

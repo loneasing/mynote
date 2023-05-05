@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<title>localStorage</title>
+</head>
+
+<body>
+
+	<!-- 
+		
+	1. 浏览器端通过 Window.sessionStorage 和 Window.localStorage 属性来实现本地存储机制。
+
+	2. 相关API：
+		- setItem('key','value')：该方法接受一个键和值作为参数，会把键值对添加到存储中，如果键名存在，则更新其对应的值。
+
+		- getItem('key')：该方法接受一个键名作为参数，返回键名对应的值。
+
+		- removeItem('key')：该方法接受一个键名作为参数，并把该键名从存储中删除。
+
+		- clear()：该方法会清空存储中的所有数据。
+
+	3. 备注：
+		- SessionStorage存储的内容会随着浏览器窗口关闭而消失。
+		- LocalStorage存储的内容，需要手动清除才会消失。
+		- xxxStorage.getItem(xxx)如果xxx对应的value获取不到，那么getItem的返回值是null。
+		- JSON.parse(null)的结果依然是null。
+		
+	-->
+
+	<h2>localStorage</h2>
+	<button onclick="saveData()">点我保存一个数据</button>
+	<button onclick="readData()">点我读取一个数据</button>
+	<button onclick="deleteData()">点我删除一个数据</button>
+	<button onclick="deleteAllData()">点我清空一个数据</button>
+
+	<script type="text/javascript">
+
+		let p = { name: '张三', age: 18 }
+
+		// window.localStorage.setItem() 	window可以省略
+		function saveData() {
+			localStorage.setItem('msg', 'hello')
+			localStorage.setItem('msg2', 666)
+			localStorage.setItem('person', JSON.stringify(p)) // JSON.stringify()将一个对象转换成JSON格式的字符串
+		}
+
+		// localStorage.getItem()
+		function readData() {
+			console.log(localStorage.getItem('msg'))
+			console.log(localStorage.getItem('msg2'))
+
+			const result = localStorage.getItem('person')
+			console.log(JSON.parse(result))	// JSON.parse()将一个JSON格式的字符串解析成一个JSON对象
+
+			// 获取不存在的key返回null值
+			// console.log(localStorage.getItem('msg3'))
+			// const result = localStorage.getItem('person2')	// null
+			// console.log(JSON.parse(result))	// JSON.parse(null) ==> null
+
+		}
+
+		// localStorage.removeItem()
+		function deleteData() {
+			localStorage.removeItem('msg2')
+		}
+
+		// localStorage.clear()
+		function deleteAllData() {
+			localStorage.clear()
+		}
+	</script>
+</body>
+
+</html>

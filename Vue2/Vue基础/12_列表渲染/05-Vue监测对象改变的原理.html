@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>vue检测对象改变的原理</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+        首先回顾一下数据代理的流程：
+            1.创建Vue实例，传入配置项，配置项中配置了data项
+            2.vm收集data项中的数据存储在_data属性中，同时为每个数据添加了setter和getter方法，这一步很重要。
+            3.将_data中的数据进行数据代理，将代理属性添加到vm对象中。并为代理属性生成了对应的setter和getter。
+            4.vm通过修改代理属性，触发代理属性的setter从而改变_data中的数据。
+            
+        Vue监测对象改变的原理：
+            在_data属性中为每个数据都添加了setter和getter，_data中的数据一改变就会调用数据对应的setter，
+            这个setter会重新解析模板，然后生成新的虚拟DOM与旧虚拟DOM对比生成真实DOM，最后更新页面。
+
+        简而言之：Vue监测对象是否改变就是靠setter和getter，只要一改变就会调用setter，然后重新解析模板更新页面。
+     -->
+    <div id='root'>
+        <h2>国家：{{country}}</h2>
+        <h2>省份：{{province}}</h2>
+        <button @click="province = '上海'">切换城市</button>
+        <hr>
+        <h2>书名：{{book.name}}</h2>
+        <h2>价格：{{book.price}}</h2>
+        <button @click="book = {name:'Little Girl',price:88}">切换图书</button>
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            country: '中国',
+            province: '江西',
+            book: {
+                name: 'Old Boy',
+                price: 99
+            },
+            /*
+                只要是个对象，不管对象藏得有多深，vue都会为其属性生成对应的getter和setter
+            */
+            student: {
+                name: 'Alice',
+                body: {
+                    height: '180cm',
+                    weight: '60kg'
+                },
+                friends: [
+                    { name: 'Bob', body: { height: '170cm', weight: '50kg' } },
+                    { name: 'Cindy', body: { height: '175cm', weight: '55kg' } }
+                ]
+            }
+        }
+    })
+
+    console.log(vm.province)    // province是一个属性，Vue给它设置了setter方法
+    console.log(vm.book)    // book是一个对象，Vue给它内部的属性都设置了setter方法
+    // 所以当对象中数据发生变化时，Vue能及时检测到并重新解析模板。
+</script>
+
+</html>

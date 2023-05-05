@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>添加响应式属性</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <div id='root'>
+        <button @click="addSex">添加一个性别属性，默认值是男</button>
+        <h3>姓名：{{student.name}}</h3>
+        <h3>年龄：{{student.age}}<button @click="addAge">添加年龄</button></h3>
+        <h3 v-if="student.sex">性别：{{student.sex}} <button @click="addSex2">修改性别</button></h3>
+        <h3>身高：{{student.body.height}}</h3>
+        <h3>体重：{{student.body.weight}}</h3>
+        <h3>朋友们：</h3>
+        <ul>
+            <li v-for="(f,index) in student.friends" :key="index">
+                {{f.name}}--{{f.body.height}}--{{f.body.weight}}
+            </li>
+        </ul>
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            student: {
+                name: 'Alice',
+                body: {
+                    height: '180cm',
+                    weight: '60kg'
+                },
+                friends: [
+                    { name: 'Bob', body: { height: '170cm', weight: '50kg' } },
+                    { name: 'Cindy', body: { height: '175cm', weight: '55kg' } }
+                ]
+            }
+        },
+        methods: {
+            addAge(){
+                this.student.age = 18   // 添加一个age属性并且赋值
+                /* 
+                    只要data项中数据发生了变化，_data属性中的数据就会自动更新，所以新增的age也会存入到_date中。
+                    但是这种方式新增的属性并没有getter和setter方法，那么它是怎么被检测到并加入到_data属性中呢？
+                    别忘了初始化的时候，Vue不仅为student内部的属性添加了getter和setter，还为student本身添加了getter和setter，
+                    所以当对其进行添加属性时，调用student的setter从而引起_date中数据的更新。(个人理解)
+                */
+                console.log(this._data.student.age) // 输出18
+                // 可以修改age值，但是无法被Vue检测到有变化，所以无法在页面上动态更新，因为新增的age始终没有getter和setter，也就是没有响应式的功能。
+            },
+            addSex() {
+                /*
+                    通过Vue.set(target,key,val) 或者 vm.$(target,key,val)添加的属性是响应式属性，
+                    Vue会自动为其生成getter和setter（在_data中的属性中在以及vm中的代理属性中都会生成，现有前者再有后者），Vue可以检测到它的变化。
+                    其中target为目标对象，key为要添加的属性，val为添加属性的值。
+                */
+                // Vue.set(this._data.student.'sex,'女')   
+                // Vue.set(this.student,'sex','男')
+                this.$set(this.student, 'sex', '男')    
+
+                /* 
+                    注意使用Vue.set()或vm.$set()时其参数target不能是vm对象或者vm的data对象(_data)，否则报错。
+                    只能为_data中已有的对象添加属性，原因是已有的对象，Vue都为他们生成了getter和setter，
+                    而已存在的对象的getter和setter会为添加的属性代理生成getter和setter，从而可以成为响应式属性。
+                    就比如student也有自己的getter和setter，查看控制台可以看到它们内部分别有proxyGetter()和 proxySetter()。(个人理解)
+                */
+            },
+            addSex2(){
+                this.student.sex = '女' // 通过Vue.set()添加了sex属性后，sex就拥有了响应式的功能，因为它有了setter，Vue可以监测到它的变化
+            }
+
+        }
+    });
+</script>
+
+</html>

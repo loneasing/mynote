@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>过滤器</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+    <script type='text/javascript' src='../js/dayjs.min.js'></script>
+</head>
+
+<body>
+    <!-- 
+    	过滤器：
+    		- 定义：对要显示的数据进行特定格式化后再显示（适用于一些简单逻辑的处理）。
+            - 过滤器也是一个函数，只不过它需要搭配管道符“|”使用。
+            - 过滤器写在配置对象的filters属性中，这表示是局部过滤器，仅在当前vm对象中使用。
+            - 过滤器还可以只用Vue.filter(name,callback)注册，这种方式注册的是全局过滤器。全局过滤器需要在创建Vue实例之前注册。
+            - 过滤器在表达式中不加小括号表示默认传入“|”前面的数据作为参数，加了括号表示传入参数，接收时默认第一个参数接收的是“|”前面的数据。
+    		- 过滤器并没有改变原本的数据, 是产生新的对应的数据。
+    		- 多个过滤器也可以串联。
+
+    		- 定义语法：
+    			    (1) 全局过滤器：    Vue.filter(name,callback)
+                    (2) 局部过滤器：    new Vue({filters: { 过滤器名(){} }})
+                    
+            - 使用语法：
+    			    {{ xxx | 过滤器名}}  或  v-bind:属性 = "xxx | 过滤器名"。
+                    “|”为管道符，表示将前面的表达式的结果作为参数传给后面的表达式执行。
+
+    -->
+    <div id='root'>
+        <h2>解析时间戳并格式化</h2>
+        <!-- 计算属性实现 -->
+        <h3>现在是：{{fmtTime}}</h3>
+
+        <!-- methods实现 -->
+        <h3>现在是：{{getFmtTime()}}</h3>
+
+        <!-- 过滤器实现 -->
+        <h3>现在是：{{time | timeFormat}}</h3> <!-- 默认接收time的值作为参数 -->
+        <!-- 过滤器实现（传参） -->
+        <h3>现在是：{{time | timeFormat('YYYY_MM_DD') | mySlice}}</h3> <!-- 看似只传一个参数，实则传了两个参数，需要用两形参接收 -->
+
+        <!-- 过滤器v-bind写法 （）-->
+        <h3 :x="msg | mySlice">hello</h3>
+    </div>
+
+    <div id="root2">
+        <h3>{{msg | mySlice}}</h3> <!-- 全局过滤器每个Vue实例都可以使用 -->
+    </div>
+</body>
+
+<script type='text/javascript'>
+    //注册全局过滤器
+    //全局过滤器需要在创建Vue实例之前注册。
+    Vue.filter('mySlice', function (value) {
+        return value.slice(0, 4)   // 截取从索引0开始，往后的四个字符
+    })
+
+    new Vue({
+        el: '#root',
+        data: {
+            time: 1888888888888, //时间戳
+            msg: 'hello,China'
+        },
+        computed: {
+            fmtTime() {
+                // dayjs是引入第三方库中的api，用于解析时间戳的
+                console.log(dayjs())
+                return dayjs(this.time).format('YYYY年MM月DD日 HH:mm:ss')
+            }
+        },
+        methods: {
+            getFmtTime() {
+                return dayjs(this.time).format('YYYY年MM月DD日 HH:mm:ss')
+            }
+        },
+        //局部过滤器
+        filters: {
+            // 过滤器方法默认会筛选过滤条件为true的元素组成新的数组。
+            timeFormat(value, str = 'YYYY年MM月DD日 HH:mm:ss') {// 因为手动传入了一个参数，所以需要两个参数接收，第二个参数赋了值表示默认值，没有传第二个参数时则使用该默认值。
+                return dayjs(value).format(str)
+            }
+        }
+    })
+
+    new Vue({
+        el: '#root2',
+        data: {
+            msg: 'hello,China'
+        }
+    })
+</script>
+
+</html>

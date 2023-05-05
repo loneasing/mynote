@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>初识Vue</title>
+    <script type="text/javascript" src="../js/vue.js"></script>
+</head>
+
+<body>
+
+    <!-- 
+    			初识Vue：
+    				- 想让Vue工作，创建一个容器，创建一个Vue实例，传入一个配置对象，配置对象绑定容器
+    				- 容器里的代码依然符合html规范，只不过混入了一些特殊的Vue语法；
+    				- 容器里的代码被称为Vue模板；
+    				- Vue实例和容器是一一对应的，真实开发中只有一个Vue实例，并且会配合着组件一起使用；
+    				- {{xxx}}中的xxx要写js表达式，且xxx可以自动读取到data中的所有属性；
+    				- 一旦data中的数据发生改变，那么页面中用到该数据的地方也会自动更新；
+    
+    				注意区分：js表达式 和 js代码(语句)
+    						1.表达式：一个表达式会产生一个值，可以放在任何一个需要值的地方：
+    									(1). a
+    									(2). a+b
+    									(3). demo(1)
+    									(4). x === y ? 'a' : 'b'
+                                        ...
+    
+    						2.js代码(语句)
+    									(1). if(){}
+    									(2). for(){}
+                                        ...
+    		-->
+
+    <!-- 创建一个容器 -->
+    <div id="root">
+        <h1>Hello,{{name}}</h1>
+        <h3>Hello,{{name.toUpperCase()}}</h3>   <!--将name的值转化成大写-->
+        {{Date.now()}}  <!--Date.now()获取当前的时间戳-->
+    </div>
+
+    <!-- 测试多个容器 -->
+    <div class="root"><h2>{{name}}</h2></div> <!--在有多个容器的情况下，只会绑定第一个容器-->
+    <div class="root"><h2>{{name}}</h2></div>
+
+    <script type="text/javascript">
+        Vue.config.productionTip = false; //阻止Vue在启动时生成生产建议提示
+        //创建Vue实例，参数为一个配置对象（每一项都是配置对象的一个属性）
+        //配置项的形式是键值对，键是字符串类型，只是习惯性省略了引号(比如data实际上是'data')，有些情况不能省略引号；值可以是任意类型
+        new Vue({
+            /*
+                el为元素项，Vue实例通过el与指定元素互相绑定
+                el的值可以写css选择器的字符串形式，也可以通过js代码获取比如：document.getElementById('root')
+            */
+            el: "#root",
+            
+            /*
+                data为数据项，用于存储数据，数据供el指定的容器使用
+                data的值可以写成一个对象，还可以写成一个函数。写成对象形式时对象中可以有属性和方法。
+                获取data的数据使用插值语法，就是两个花括号包起来，即{{属性}}
+            */
+            data: {
+                name: "loneasing"
+            }
+        });
+
+        // 创建第二个Vue实例
+        new Vue({
+            el: ".root",
+            data: {
+                name: "China"
+            }
+        });
+    </script>
+</body>
+
+</html>

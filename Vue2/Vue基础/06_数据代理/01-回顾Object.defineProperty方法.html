@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>defineProperty方法的使用</title>
+</head>
+
+<body>
+    <!-- 
+        Object.defineProperty()的使用：
+            - 此方法是用来给对象定义属性的，它有三个参数：对象、属性名、配置对象。
+            - 配置对象中的属性：
+                value：设置属性的值
+                enumerable：设置属性是否可以枚举（也就是是否可以遍历），默认值是false
+                writeable：设置属性是否可以被修改，默认值是false
+                configurable：设置属性是否可以被删除，默认是false
+                getter：添加get()函数获取属性的值。【get:function(){}】这就是getter，可以简写成get(){}
+                setter：添加set()函数设置属性的值。
+            - 注意:
+                属性名一定要加引号，除非它是一个变量。
+                getter和setter本身就具有读写功能，所以与writeable的值无关。
+     -->        
+    <div id="root"></div>
+</body>
+<script type="text/javascript">
+
+     // 下面使用defineProperty()给user对象定义一个uid属性，测试配置对象的其他属性
+    let uid = 1000
+    let user = {
+        name:'Esing',
+        sex:'女',
+        //uid:uid
+    }
+   
+    Object.defineProperty(user,'uid',{
+        value:uid, /* 这种设置属性值的方式不好，如果uid发生变化，value的值不会改变，因为代码是自上而下执行解释运行的，
+        value保留的是第一次赋值的值，除非重新执行赋值，这也就引入了setter方法*/
+        enumerable:true, //设置age属性可以枚举，也就是能遍历出来
+        writable:true,  //设置age属性可以被修改
+        configurable:true   //设置age属性可以被删除
+    })
+    console.log(user.uid) // 输出1000
+    console.log(Object.keys(user)) // 遍历user对象中的属性名，返回['name', 'sex', 'uid']，如果enumerable是false则只会遍历name和sex两个元素
+    user.uid = 1001 // 重新赋值。如果writeable的值是false，则此语句不生效，uid的值还是1000
+    console.log(user.uid)   // 输出1001
+
+    /******************************************************************************************/
+
+    // 下面使用defineProperty()给person对象定义一个age属性，添加getter和setter属性
+     let number = 18
+        let person = {
+            name: 'Esing',
+            sex: '男',
+            //age:number
+        }
+
+        Object.defineProperty(person, 'age', {
+            // 当需要读取person的age属性时，getter就会被调用，返回值就是age的值
+            get: function () {  //可以简写成get(){}
+                console.log(this)   // 这个this指的是person对象
+                return number
+            },
+            // 当需要修改person的age属性时，setter就会被调用，参数value就是修改的值
+            set(value) {
+                number = value
+            }
+
+        })
+        console.log(Object.keys(person)) //  ['name', 'sex']，只有两个元素，因为没有设置可以枚举
+
+</script>
+
+</html>

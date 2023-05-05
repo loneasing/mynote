@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>v-text指令</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+		复习一下之前学过的指令：
+			    	v-bind	: 单向绑定解析表达式, 可简写为 :xxx
+			    	v-model	: 双向数据绑定
+			    	v-for  	: 遍历数组/对象/字符串
+			    	v-on   	: 绑定事件监听, 可简写为@
+			    	v-if 	: 条件渲染（动态控制节点是否存存在）
+			    	v-else 	: 条件渲染（动态控制节点是否存存在）
+			    	v-show 	: 条件渲染 (动态控制节点是否展示)
+
+		v-text指令：
+                - 向其所在的节点中渲染文本内容。
+                - v-text会替换掉节点中的内容。
+                - v-text不能解析标签元素。
+     -->
+    <div id='root'>
+        <h3>hello,{{name}}</h3> 
+        <h3 v-text="name">hello</h3> <!-- v-text的内容会替换标签中原有的内容 -->
+        <h3 v-text="tag"></h3> <!-- v-text不能解析html结构。 -->
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            name: 'Esing',
+            tag:'<h3>hello</h3>'
+        }
+    });
+</script>
+
+</html>

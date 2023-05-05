@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>姓名案例-计算属性实现</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+    	计算属性项 computed：
+    		- 通过vm已有属性计算得出来的属性叫计算属性，计算属性会被代理成vm的属性。底层借助了Object.defineproperty方法提供的getter和setter。
+            - 计算属性都声明在computed属性中，computed的值是一个对象，对象中的每一项就是一个计算属性，计算属性的名字是自定义的。
+            - 计算属性的值是一个配置对象，配置对象中有set()函数和get()函数，但是获取到计算属性的值是get()函数返回的值。
+                - get()：返回计算属性的值。
+                - set()：改变计算属性的值，而改变计算属性的值需要改依赖属性的值，所以准确点说就是用来改变依赖属性的值。
+            - 计算属性也可以声明成函数的形式（前提是不需要set()函数），函数名就是计算属性名，函数的返回值就是计算属性的值。
+
+            - 定义语法：
+                (1) 对象形式：
+                            new Vue({ computed:{ 计算属性名1:配置对象,
+                                                 计算属性名2:配置对象  }})
+                    其中配置对象内只需要get函数时，配置对象可以写成一个函数的形式： 计算属性名:function(){get函数的函数体}
+                    而上述写法还可以整体写成一个以计算属性命名的函数：计算属性名(){get函数的函数体}，所以有了第二种定义语法。
+                (2) 函数形式：new Vue({ computed:{ 计算属性名(){} } }) ，注意这种形式只默认配置了get()函数。
+
+            - 因为computed内部有缓存机制（复用），所以get()函数并不是在每次获取计算属性值时都会重新调用。
+                - 初次读取时会调用一次。
+                - 当依赖的数据发生改变时会被再次调用。
+            - set函数在修改计算属性值时会自动调用。
+
+    	注意：
+    		- 计算属性最终会出现在vm上，直接读取使用即可。
+    		- 如果计算属性要被修改，那必须写set函数去响应修改，并且要使依赖的数据发生改变。
+            
+    -->
+    <div id='root'>
+        <h3>姓：<input type="text" v-model="firstName"></h3>
+        <h3>名：<input type="text" v-model="lastName"></h3>
+        <h3>全名：{{fullName}}</h3> <!--计算属性也被代理成vm的一个属性，所以直接写属性名即可获取对应的值-->
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+
+        // 元素项
+        el: '#root',
+
+        // 数据项
+        data: {
+            firstName: '张',
+            lastName: '三',
+        },
+        
+        //计算属性项
+        computed: { 
+            fullName: { // 自定义一个计算属性
+                get() {
+                    return this.firstName + "-" + this.lastName
+                },
+                set(value) {
+                    const arr = value.split('-')    // 将value值以-分隔，返回一个数组。（预先设定好姓和名之间用“-”隔开）
+                    this.firstName = arr[0] // 取数组第一个元素赋给firstName，从而调用set()从而改变_data中的数据，从而改变页面的数据。
+                    this.lastName = arr[1]  // 取数组第二个元素赋给lastName，和上述同理。
+                }
+            },
+            // 一般情况下计算属性只是为了获取计算出来的属性的值，并不会对其修改，可以省略set()后可以对get()函数进行一个缩写。
+            fullName2: function () { return this.firstName + "-" + this.lastName },   // 将计算属性的值写成一个函数，其函数体就是get()函数的内容
+            // 上述写法还可以进行简写
+            fullName3() {
+                return this.firstName + "-" + this.lastName // 以计算属性的名字为函数名，函数的返回值就是计算属性的值
+            }
+            /* 注意：千万不要看到计算属性带了一个括号，就认为计算属性是一个函数，只不过它被写成了函数形式，
+            它还是vm的一个代理的属性值，就像data中的数据一样可以直接获取，写在插值语法中直接写 计算属性名 即可。*/
+        }
+    });
+    // 修改计算属性的值
+    vm.fullName = "李-四"
+    console.log(vm.firstName)   // 输出“李”
+    console.log(vm.lastName)    // 输出“四”
+    // 由此可以看出修改计算属性的值，会使其计算依赖的属性值也被修改，从而改变了_data中的数据，从而改变了其依赖的数据，进而改变了计算属性的值。
+    //流程：修改计算属性-> 修改vm的代理的属性 -> 触发setter修改data对象(_data属性)中存储的数据 -> (需要获取值时自动触发getter)引起vm的代理属性的值的改变 -> 改变计算属性的值
+
+
+</script>
+
+</html>

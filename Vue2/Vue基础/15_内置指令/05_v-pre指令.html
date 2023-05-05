@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>v-pre指令</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+        	v-pre指令（没有值）：
+        			1.跳过所在节点的解析过程。即不解析添加了v-pre属性的节点。
+        			2.可利用它跳过没有使用指令语法、没有使用插值语法的节点，会加快编译。
+    -->
+    <div id='root'>
+        <h2 v-pre>hello world</h2>
+        <h2 v-pre>hello {{name}}</h2> <!-- 页面中会显示{{name}}，因为添加了v-pre属性，则该元素不被解析 -->
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            name: 'Esing',
+        }
+    });
+</script>
+
+</html>

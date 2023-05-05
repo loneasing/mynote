@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>事件的基本使用</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+		事件的基本使用： 
+                - v-on表示绑定事件监听，可以简写成@
+				- 使用 v-on:xxx='函数名" 或 @xxx="函数名"绑定事件，其中xxx是事件名，函数名加括号则可以传入参数。
+				- 事件的回调需要配置在methods属性中，最终会在vm上，可以通过vm直接调用。
+				- methods中配置的函数，不建议使用箭头函数！否则函数中的this就不是vm了。（箭头函数没有this）
+				- methods中配置的函数，都是被Vue所管理的函数，this的指向是vm 或 组件实例对象；
+				- @click="xxx" 和 @click="xxx($event)" 效果一致，但后者可以传参；
+                    比如：@click = fn($event,x)，x是设置的一个形参名(自定义的)，通过x接收传入的参数。
+                        $有占位符的意思，表示占用一个参数的位置用来接收event，event是事件对象。
+                        如果不写$event的话，则事件对象会丢失，就不能使用事件对象中的属性或方法了。
+     -->
+    <div id='root'>
+        <h3>Welcome to {{name}}</h3>
+
+        <!-- 使用v-on指令绑定事件，v-on表示监听的意思 -->
+        <button v-on:click="show">Click Me 1</button><br><!--show方法没有传参-->
+        <!-- 使用简写形式：@click = "函数名" -->
+        <button @click="show">Click Me 2</button><br><!--show方法没有传参-->
+
+        <button @click="show2('i love China')">Click Me 3</button><br> <!--show方法传入了参数-->
+        <button @click="show3('i love China',$event)">Click Me 4</button><br> <!--show方法传入了参数，且传入了事件对象-->
+        
+
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            name: 'China',
+        },
+        // 方法项（方法属性）
+        methods:{
+            show(e){    /* 函数没有传入参数时，默认第一个参数是函数内置的事件对象，该对象存储与事件有关的信息，
+                           一般用e表示，比如e.target表示获取事件源，也就是触发事件的元素 */
+                console.log(e)  // 打印事件对象
+                console.log(e.target)   // 输出 <button>Click Me</button>
+                console.log(e.target.innerText) // 输出Click Me
+                console.log(this)   // 此处的this是vm对象
+                alert('欢迎来到中国')
+            },
+            show2(e,event){     // 设置两个形参用于接收传进来的参数
+                console.log(e)    // 输出了参数内容 i love China，说明传入参数后第一个参数就不再默认是事件对象了，而是第一个参数的值。
+                console.log(event)  // 输出第二个参数内容 undefined，说明参数列表只传入一个参数。
+                // 所以在传入参数时要用$event占用参数列表的一个位置，这样才能获取到事件对象。
+            },
+            show3(a,b){   
+                console.log(a)  // 输出第一个参数的内容 i love China
+                console.log(b)    // 输出第二个参数的内容 事件对象
+            }
+        }
+    });
+</script>
+
+</html>

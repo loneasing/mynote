@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据绑定</title>
+    <script type="text/javascript" src="../js/vue.js"></script>
+</head>
+
+<body>
+    <!-- 
+        Vue有2种数据绑定的方式：
+            - 单向绑定(v-bind)：数据只能从data流向页面
+                解释：绑定的属性的值在data中修改了在页面中也会改变，而在页面中修改绑定属性的值，data中的值不受影响。
+            - 双向绑定(v-model)：数据可以从data刘翔页面，还能从页面流向data
+                解释：绑定的属性的值在data中修改了在页面中也会改变，反之亦然。
+
+            说明：双向绑定一般用在表单类元素上，且v-model只能绑定value属性，所以v-model:value可以省略为v-model
+     -->
+    <!-- 创建一个容器 -->
+    <div id="root">
+
+        <!-- 使用v-bind进行单向绑定 -->
+        单向绑定：<input type="text" v-bind:value="name"><br>
+        <!-- 使用v-model进行双向绑定 -->
+        双向绑定：<input type="text" v-model:value="name"><br>
+
+        <!-- 简写语法 -->
+        单向绑定：<input type="text" :value="name"><br>
+        双向绑定：<input type="text" v-model="name"><br>
+
+        <!-- v-model不能使用在非表单元素上 -->
+        <!-- <div v-model="name"></div> -->
+
+        <!-- textarea标签可以使用v-model -->
+        <!-- textarea是一个双标签，也有一个value属性，但是它的值是标签体的内容-->
+        <textarea value="name">哈哈</textarea><br> <!--在textarea标签中使用原生方式给value属性赋值无效-->
+        <textarea v-model="name">你是谁</textarea><br> <!--使用v-model绑定value属性可以改变value的值，从而改变标签体中的内容-->
+
+    </div>
+</body>
+<script type="text/javascript">
+    // 创建Vue对象
+    new Vue({
+        el: '#root',
+        data: {
+            name: 'loneasing'
+        }
+    })
+
+    let text = document.getElementsByTagName('textarea');
+    console.log(text[0].value)   //输出哈哈
+    //不使用数据绑定的话，在textarea标签中给value赋值无效，只能通过js代码赋值
+    text[0].value = '呵呵'       //改变value值从而改变标签体内容
+    console.log(text[0].value)   //输出呵呵
+    console.log(text[1].value)   //输出loneasing
+</script>
+
+</html>

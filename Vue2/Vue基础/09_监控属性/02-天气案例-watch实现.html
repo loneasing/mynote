@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>天气案例-监视属性</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+    		监视项watch ：
+                - 监视属性都声明在watch属性中，watch的值是一个对象，对象中每一项就是一个监视属性，监视属性的名字就是被监视的属性名。
+                - 监视属性的值是一个配置对象，配置对象中有immediate属性、deep属性、handler方法等等。
+                    - immediate：是否初始化时执行handler方法。默认是false
+                    - deep：是否开启深度监视。默认false
+                    - handler(newValue, oldValue)：监控的属性发生变化自动调用handler方法。
+                        - 该方法有两个参数，第一个参数为监视的属性变化后的值，第二个参数为监视的属性原来的值。
+                
+    			- 监视的定义语法：
+                            (1) new Vue(watch:{ 监视的属性:配置对象 })
+                            (2) new Vue(watch:{ 监视的属性(){} })，这种语法只配置了handler()函数，其他的都是默认值。
+                            (3) vm.$watch('监视的属性',配置对象)       
+
+                - 监视的属性必须是vm中已存在的属性，才能进行监视。
+    -->
+
+    <!-- 准备好一个容器-->
+    <div id='root'>
+        <h2>今天天气很{{info}}</h2>
+        <button @click="changeWeather">切换天气</button>
+    </div>
+</body>
+
+<script type='text/javascript'>
+
+    const vm = new Vue({
+        // 元素项
+        el: '#root',
+        // 数据项
+        data: {
+            isHot: true,
+        },
+        // 计算属性项
+        computed: {
+            info() {
+                return this.isHot ? '炎热' : '凉爽'
+            }
+        },
+        // 方法项
+        methods: {
+            changeWeather() {
+                this.isHot = !this.isHot
+            }
+        },
+        // 监视项
+        watch: { //watch属性是用来存储监控属性的，它的值是一个对象。
+            // 监视的第一种写法：写在watch配置项
+            isHot: { // 监视isHot属性，监视属性的值也要是一个配置对象。
+                immediate: true, //true表示初始化时自动调用一次handler方法
+                handler(newValue, oldValue) {   // 参数名是可以自定义的，每个参数的参数位置是固定的，比如第一位参数为新值
+                    console.log('isHot被修改了：'+ oldValue+"=>"+ newValue)
+                }
+            },
+            // 监视属性也可以简写，配置对象中只有handler方法时可以简写成函数形式:
+            isHot(newValue, oldValue){  // 当然不是非得把两个参数都写出来，只需要用第一个参数时就写一个参数
+                console.log('isHot被修改了：' + oldValue + "=>" + newValue)
+            }
+        }
+    });
+
+    //监视的第二种写法：vm调用$watch('监视的属性',配置对象)
+    vm.$watch('isHot', {    // 监控isHot属性，注意要加引号，键值对的key默认是有引号的，当配置项的键时可以不加引号
+            immediate: true,
+            handler(newValue, oldValue) {
+                console.log('isHot被修改了：' + oldValue + "=>" + newValue)
+            }
+        })
+</script>
+
+</html>

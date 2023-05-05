@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>事件修饰符</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+    <style>
+        * {
+            margin: 10px;
+        }
+
+        .mydiv {
+            width: 200px;
+            background-color: skyblue;
+        }
+
+        main {
+            width: 100px;
+            background-color: aqua;
+            margin: 0 auto;
+        }
+
+        .box1 {
+            width: 200px;
+            height: 100px;
+            background-color: skyblue;
+        }
+
+        .box2 {
+            width: 100px;
+            height: 60px;
+            background-color: orange;
+        }
+
+        .box3 {
+            width: 50px;
+            height: 25px;
+            background-color: chartreuse;
+        }
+
+        .list {
+            width: 200px;
+            height: 200px;
+            background-color: peru;
+            overflow: auto;
+        }
+
+        li {
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 
+			Vue中的事件修饰符：
+					1.prevent：阻止默认事件（常用）；
+					2.stop：阻止事件冒泡（常用）；
+					3.once：事件只触发一次（常用）；
+					4.capture：使用事件的捕获模式；
+					5.self：只有当前操作的元素是event.target时才触发事件；
+					6.passive：事件的默认行为立即执行，无需等待事件回调执行完毕；
+
+            事件修饰符的使用格式：@事件名.修饰符 = "xxx" ，xxx为回调函数名，不用传入参数可以不加括号，
+            函数名加括号表示要传入参数，此时需要使用$event传入事件对象，不然事件对象无法获取到。
+            当然事件修饰符可以同时使用多个：@事件名.修饰符1.修饰符2 = "xxx"，多个修饰符按顺序生效。
+     -->
+    <div id='root'>
+        <h3>Welcome to {{name}}</h3>
+
+        <!-- prevent：阻止默认事件 -->
+        <a href="www.baidu.com" @click.prevent="show">百度一下，你就知道</a>
+        <a href="www.baidu.com" @click.prevent="show()">百度一下，你就知道</a> <!--如果函数名加了括号不传入参数表示表示传入的参数为空，事件对象也会丢失。-->
+
+        <!-- stop：阻止事件冒泡 
+        事件冒泡：元素默认在事件冒泡阶段触发事件，事件从当前触发的元素开始一直往外层传播，传播过程中其他元素绑定了该事件也会被触发执行。
+        冒泡阶段：子元素->父元素->body->html->document   (由内向外)
+        -->
+        <div class="mydiv" @click="show2">
+            <main @click="show2"> <!--main标签没有阻止冒泡，如果点击main标签，则点击事件会传到上一级元素，上一级元素绑定了点击事件，也会触发事件-->
+                <button @click.stop="show2">Click Me</button> <!--阻止事件冒泡，点击事件不会向上传递了-->
+            </main>
+        </div>
+
+        <!-- capture：开启事件捕获
+        事件捕获：如果元素开启事件捕获，则在捕获阶段就会触发事件。
+        捕获阶段：document->html->body->父元素->子元素   (由外向内)
+        记住：任何事件都是先从document元素传过来再传回去，也就是由捕获阶段再到冒泡阶段。默认情况是在冒泡阶段触发事件。
+        -->
+        <div class="box1" @click.capture="show3('box1')"> <!--开启了事件捕获，则在捕获阶段就会触发事件，所以box1最先触发事件-->
+            box1
+            <div class="box2" @click="show3('box2')"> <!--该元素没有开启事件捕获，事件只能在冒泡阶段被触发-->
+                box2
+                <div class="box3" @click="show3('box3')"> <!--该元素也是在冒泡阶段才能触发事件，冒泡阶段是由内向外传播的，所以box3比box2先触发事件-->
+                    box3
+                </div>
+            </div>
+        </div>
+
+        <!-- once：事件只触发一次 -->
+        <button @click.once="show4">提示信息</button> <!--事件仅触发一次，再次点击，事件不会触发-->
+
+        <!-- self：只有event.target是self修饰的元素时，该元素的事件才会被触发；self也相当于阻止了事件冒泡，但只是保证自身不受事件冒泡影响-->
+        <div class="mydiv" @click.self="show5"> <!--只有事件源是我本身，才会触发事件-->
+            <button @click="show5">触发事件</button>
+        </div>
+
+        <!-- passive：事件的默认行为立即执行，无需等待事件回调执行完毕
+        下面使用wheel事件进行演示（鼠标滚轮事件：只要鼠标滚轮滚动了就会触发事件，即使页面滚不动了也能触发）。
+        还有一个滚动事件scroll（滚动条滚动事件：滚动条滚动了才会触发事件），但是passive对该事件并不影响，该事件默认就是立即执行默认行为。
+        -->
+        <ul @wheel="show6" class="list"> <!--没有使用passive修饰，则需回调函数执行完毕才执行默认的滚动行为。明显感受到滚动卡顿-->
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+        </ul>
+        <ul @wheel.passive="show6" class="list"> <!--无需等待回调函数执行完毕，立即执行默认行为(此时回调函数仍在后台执行)。滚动很丝滑-->
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+        </ul>
+
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            name: 'China',
+        },
+        methods: {
+            show(e) {
+                console.log(e)
+                alert("默认行为被阻止了")
+            },
+            show2(e) {
+                alert("事件源元素名：" + e.target.localName)
+
+            },
+            show3(box) {
+                alert("我是：" + box)
+            },
+            show4(e) {
+                console.log(e);
+                alert("此消息只提示一次")
+            },
+            show5() {
+                alert("当前点击的元素才会触发事件")
+            },
+            show6() {
+                for (let i = 0; i < 100000; i++) {
+                    console.log('#')
+                }
+                console.log('累坏了')
+            }
+        }
+    });
+</script>
+
+</html>

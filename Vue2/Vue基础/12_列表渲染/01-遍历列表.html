@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>遍历列表</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+    	v-for指令:
+            (1)语法：v-for="(item, index) in xxx" :key="yyy"
+                ① 使用v-for指令遍历时，表达式中的形参有两个，第一个接收遍历数据的每一项，第二个接收当前遍历的索引号。
+                  建议用括号将这两个参数括起来，如果不需要用到索引可以只写一个参数。
+                ② in这个运算符也可以使用of代替。
+                ③ :key为绑定唯一的键，后续再说。
+
+    		(2)v-for可以遍历：数组、对象、字符串（用的很少）、指定次数（用的很少）
+    -->
+    <div id='root'>
+        <h3>遍历数组</h3>
+        <ul>
+            <li v-for="(p,index) in persons" :key="index">
+                {{p.name}}-{{p.age}}  <!-- {{}}中表达式中的变量可以来自于data属性,computed属性以及遍历时的形参列表 -->
+            </li>
+        </ul>
+        
+        <h3>遍历对象</h3>
+        <ul>
+            <!-- 需要记住的是第一个形参接收的永远是遍历出来的值，
+                所以遍历对象时表达式中第一个参数接收对象的属性值，第二个参数接收对象的属性名 -->
+            <li v-for="(value,key) in car" :key="key">
+                {{key}}:{{value}}
+            </li>
+        </ul>
+        
+        <h3>遍历字符串</h3>
+        <ul>
+            <!-- 遍历字符串时，形参列表第一个参数接收遍历出来的每一个字符，第二个参数接收当前遍历的索引号 -->
+            <li v-for="(char,index) of str" :key="index">
+                {{char}}-{{index}}
+            </li>
+        </ul>
+        
+        <h3>遍历指定次数</h3>
+        <ul>
+            <!-- 遍历指定次数时，第一个参数接收从1开始的自然增长数，第二个参数接收遍历的索引号 -->
+            <li v-for="(number,index) of 5" :key="index"> <!-- 遍历5次，输出1，2，3，4，5-->
+                {{number}}-{{index}}
+            </li>
+        </ul>
+        </div>
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            persons: [
+                { id: '001', name: '张三', age: 18 },
+                { id: '002', name: '李四', age: 19 },
+                { id: '003', name: '王五', age: 20 }
+            ],
+            car: {
+                name: 'Audi A8',
+                price: '800000',
+                color: 'black'
+            },
+            str: 'hello'
+        }
+    });
+</script>
+
+</html>

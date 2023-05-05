@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>姓名案例-methods实现</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+        只要页面中模板的数据发生了变化，Vue就会重新解析模板，
+        解析模板时遇到插值语法中使用了函数调用比如{{function()}}，
+        Vue会重新掉调用一遍该函数，以保证数据是最新的。
+     -->
+    <div id='root'>
+        <h3>姓：<input type="text" v-model="firstName"></h3>
+        <h3>名：<input type="text" v-model="lastName"></h3>
+        <h3>全名：{{fullName()}}</h3> <!--插值语法中要调用函数，函数名需要加上小括号，不加小括号则会获取到函数的信息（函数名、方法体等）-->
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            firstName: '张',
+            lastName: '三'
+        },
+        //方法项
+        methods:{
+            fullName(){
+                return this.firstName+"-"+this.lastName // 这个this指的就是vm
+            }
+        }
+    });
+</script>
+
+</html>

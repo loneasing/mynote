@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>收集表单数据</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <div id="root">
+        <form @submit.prevent="demo"> <!-- 绑定提交事件 -->
+            <!-- for属性只能用在label标签中，for属性的值是元素的id，其作用是点击label标签则焦点会聚在id对应的元素上-->
+            <label for="account">账号：</label>
+            <input id="account" type="text" v-model.trim="userInfo.account"> <br /><br />
+            <label for="password">密码：</label>
+            <input id="password" type="password" v-model="userInfo.password"> <br /><br />
+
+            <!-- 需要输入纯数字的表单项可以将类型type类型设置为number
+                 再使用number修饰v-model指令，表示将数字字符串转换成数值型。-->
+            <label for="age">年龄：</label>
+            <input id="age" type="number" v-model.number="userInfo.age"> <br /><br />
+
+            <!-- 单选框的类型为radio，需要多选一只需要将name属性设置相同即可，
+                 而单选按钮的值取决于checked的值，checked为true表示选上，checked为false表示未选，
+                 因此v-model收集的值是true或者false，而我们需要的是单选按钮所代表的值，所以还需要在加个value属性表示单选按钮代表的值 -->
+            <label>性别：</label>
+            <label for="male">男</label>
+            <input id="male" type="radio" name="sex" v-model="userInfo.sex" value="male">
+            <label for="female">女</label>
+            <input id="female" type="radio" name="sex" v-model="userInfo.sex" value="female"> <br /><br />
+
+            <!-- 多选框的类型为checkbox，与单选框同理，需要添加一个value属性表示选项所代表的值，
+                 另外需要注意的是多选框的值需要用一个数组接收。 -->
+            <label>爱好：</label>
+            <label for="study">学习</label>
+            <input id="study" type="checkbox" v-model="userInfo.hobby" value="study">
+            <label for="music">音乐</label>
+            <input id="music" type="checkbox" v-model="userInfo.hobby" value="music">
+            <label for="game">游戏</label>
+            <input id="game" type="checkbox" v-model="userInfo.hobby" value="game"><br /><br />
+
+            <!-- 下拉框select的value值是option中的value值 -->
+            <label for="city">所属校区：</label>
+            <select id="city" v-model="userInfo.city">
+                <option value="">请选择校区</option>
+                <option value="beijing">北京</option>
+                <option value="shanghai">上海</option>
+                <option value="guangdong">广东</option>
+                <option value="jiangxi">江西</option>
+            </select><br /><br />
+            <label for="other">其他信息：</label>
+            <textarea id="other" v-model.lazy="userInfo.other"></textarea><br /><br />
+            <input type="checkbox" v-model="userInfo.agree">阅读并接受<a href="javascript:;">《用户协议》</a><br /><br />
+            <button>提交</button> <!-- 点击提交触发提交事件 -->
+        </form>
+    </div>
+</body>
+
+<script type='text/javascript'>
+    new Vue({
+        el: '#root',
+        data: {
+            // 将一个表单的数据写到一个对象中，方便传给后端
+            userInfo: {
+                account: '',
+                password: '',
+                age: 18,
+                sex: 'female',
+                hobby: [],
+                city: 'jiangxi',
+                other: '',
+                agree: ''
+            }
+        },
+        methods: {
+            demo() {
+                console.log(JSON.stringify(this.userInfo))  // 将对象转化成JSON格式的字符串
+            }
+        }
+    })
+</script>
+
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>模拟数据监测</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+</body>
+
+<script type='text/javascript'>
+
+    let data = {
+        country: '中国',
+        province: '江西'
+    }
+
+    // 定义一个监视器构造函数
+    function Observer(obj) {
+        // 将对象中所有属性形成一个数组
+        const keys = Object.keys(obj)
+        // 遍历key
+        keys.forEach((key) => {
+            Object.defineProperty(this, key, {
+                get() {
+                    return obj[key] // 获取对象中的值有两种方法：①对象名.属性  ②对象名['属性名']
+                },
+                set(val) {
+                    obj[key]
+                    // set()函数被调用，然后会重新解析模板（这个set()得是_data中的属性的set()函数）
+                    console.log(`${key}被修改了，我要去解析模板，生成虚拟DOM...`)   // 使用``包起来的字符串中的变量会被解析
+                }
+            })
+        })
+    }
+
+    // 创建一个监视器的实例对象，用于监视data对象中属性的变化
+    const obs = new Observer(data)
+    console.log(obs)
+
+    // //准备一个vm实例对象，给每个属性都进行加工（数据劫持）
+    let vm = {}
+    vm._data =  obs // 将监视对象（每个属性都进行了数据劫持，即添加了getter和setter）赋值给vm的data对象
+
+    // 获取_data中的数据
+    console.log(vm._data.province)
+    // 修改_data中的数据
+    vm._data.province = "上海"  // 调用了set()函数修改值
+
+
+    // 通过属性名获取对象值
+    const str = {
+        name: 'Alice',
+        age: '18'
+    }
+   console.log((str['name']));
+</script>
+
+</html>

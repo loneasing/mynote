@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>VueComponent与Vue的关系</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+   	关于VueComponent：
+
+	    1.组件本质是一个名为VueComponent的构造函数，且不是程序员定义的，是Vue.extend返回的。（可以理解为闭包）
+        
+	    2.特别注意：每次调用Vue.extend，返回的都是一个全新的VueComponent构造函数。
+        
+	    3.每写一个组件标签，Vue就会执行对应的new VueComponent(options)创建组件的实例对象。
+
+        4.相同的组件标签使用的是同一个VueComponent创建出来的不同组件实例对象。
+          不同的组件标签是使用不同的VueComponent创建出来的不同组件实例对象。
+
+	    5.关于this指向：
+		    (1)组件配置中：data函数、methods中的函数、watch中的函数、computed中的函数 它们的this均是【VueComponent实例对象】。
+		    (2)new Vue(options)配置中：data函数、methods中的函数、watch中的函数、computed中的函数 它们的this均是【Vue实例对象】。
+            
+	    6.VueComponent的实例对象，以后简称vc（也可称之为：组件实例对象）；Vue的实例对象，简称vm。
+
+        7.一个重要的内置关系：VueComponent.prototype.__proto__ === Vue.prototype
+		  为什么要有这个关系：让组件实例对象（vc）可以访问到 Vue原型上的属性、方法。
+    -->
+    <div id='root'>
+        <book ref="a"></book>
+        <book ref="b"></book>
+        <hello ref="c"></hello>
+        <button @click="test1">同组件标签是同一个VueComponent创建出来的</button>
+        <button @click="test2">不同组件标签是不同VueComponent创建出来的</button>
+    </div>
+</body>
+
+<script type='text/javascript'>
+
+    Vue.prototype.x = 99 // 在Vue的原型对象上设置x属性值为99
+
+    //定义book组件
+    const book = Vue.extend({
+        name: 'book',
+        template: `
+				<div>
+					<h2>书名：{{name}}</h2>	
+					<h2>价格：{{price}}</h2>	
+					<button @click="showX">点我输出x</button>
+				</div>
+			`,
+        data() {
+            return {
+                name: 'Old Boy',
+                price: 520
+            }
+        },
+        methods: {
+            showX() {
+                console.log(this.x) // 在VueComponent中也能获取到Vue原型对象中的属性
+            },
+            
+        },
+    })
+
+    // 定义一个hello组件
+    const hello = Vue.extend({
+        name:'hello',
+        template:`<div><h2>hello</h2></div>`,
+
+    })
+
+    //创建一个vm
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            msg: '你好'
+        },
+        components: { book,hello },
+        methods: {
+            test1() {
+                console.log(this.$refs.a.constructor === this.$refs.b.constructor)  // true
+            },
+            test2() {
+                console.log(this.$refs.a.constructor === this.$refs.c.constructor)  // false
+            }
+        },
+    })
+
+    //复习原型对象
+	/*定义一个构造函数Demo
+     function Demo(){
+        this.a = 1
+        this.b = 2
+    }
+    创建一个Demo的实例对象
+    const d = new Demo()
+
+    console.log(Demo.prototype) //显示原型属性：构造函数的prototype
+
+    console.log(d.__proto__) //隐式原型属性：实例对象的__proto__
+    
+    console.log(Demo.prototype === d.__proto__) //显示原型属性和隐式原型属性指向同一个原型对象。
+    */
+</script>
+
+</html>

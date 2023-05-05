@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title></title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+    computed和watch之间的区别：
+    	1.computed能完成的功能，watch都可以完成。
+    	2.watch能完成的功能，computed不一定能完成，例如：watch可以进行异步操作。
+            计算属性不支持定时加载，因为计算属性的值是依赖返回值的，如果用定时器，get()函数的返回值返回给了定时器。
+            而监视属性不依赖返回值，监视属性的handler()函数是设置值。
+
+    两个重要的小原则：
+    	1.所被Vue管理的函数，最好写成普通函数，这样this的指向才是vm 或 组件实例对象。
+    	2.所有不被Vue所管理的函数（定时器的回调函数、ajax的回调函数等、Promise的回调函数），最好写成箭头函数，
+    	这样this的指向才是vm 或 组件实例对象。
+    -->
+
+    <div id="root">
+        姓：<input type="text" v-model="firstName"> <br /><br />
+        名：<input type="text" v-model="lastName"> <br /><br />
+        全名：<span>{{fullName}}</span> <br /><br />
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            firstName: '张',
+            lastName: '三',
+            fullName: '张-三'
+        },
+        watch: {
+            firstName(val) {    // 第一个参数为改变后的值，第二个参数为原来的值，这里只需要第一个参数所以只写一个形参。如果只需要第二个参数两个形参都需要写
+                console.log(this)
+                /* 定时加载，注意定时器要写成箭头函数的形式，因为定时器是由js引擎调用的，js引擎是由window调用的，
+                如果不写成箭头函数，this就是window对象。写成了箭头含数，箭头函数中没有this，它就会往上一层寻找，
+                然后就找到了firstName函数(或者是handler函数)中的this也就是vm对象。
+                */
+                setTimeout(() => {  
+                    this.fullName = val + '-' + this.lastName
+                }, 1000);
+            },
+            lastName(val) {
+                this.fullName = this.firstName + '-' + val
+            }
+        }
+    })
+</script>
+
+</html>

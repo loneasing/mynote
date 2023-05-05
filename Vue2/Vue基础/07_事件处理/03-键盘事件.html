@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>键盘事件</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+    	键盘事件：
+                keydown：键盘按下后触发（一般使用这个）
+                keyup：键盘按下弹起后触发
+        使用按键别名修饰键盘事件：
+                keyup.enter：表示按下Enter键弹起后触发事件
+                keydown.delete：按下删除键(delete)或者退格键(Backspace)触发事件
+                ......
+	
+        Vue中常用的按键别名：
+    			回车 => enter
+    			删除 => delete (捕获“删除”和“退格”键)
+    			退出 => esc
+    			空格 => space
+				换行 => tab (特殊，必须配合keydown去使用，因为tab键按下后不用等弹起就切换了焦点)
+    			上 => up
+    			下 => down
+    			左 => left
+    			右 => right
+           
+        特殊按键别名：ctrl、alt、shift、meta（window键）
+            如果配合keydown使用：正常触发事件。
+            如果配合keyup使用：按下修饰键的同时，再按下其他键，随后释放其他键，事件才被触发。
+
+    	Vue未提供别名的按键，可以使用按键原始的key值去绑定，注意多个单词组合的键比如CapsLock，
+        这种类型的键转成别名就需要将单词首字母小写然后使用“-”连接，即caps-lock。还有类似的PageUp -> page-up
+        
+        也可以使用keyCode去指定具体的按键（不推荐），比如@keyup.13="XXX"表示表按下keyCode为13的键才触发事件。
+        这种方式不推荐了，因为现在的键盘五花八门，按键的编码不统一。
+
+        自定义按键别名：Vue.config.keyCodes.自定义键名 = 键码 ，也不推荐使用，一般用Vue提供的按键别名就足够了。
+    -->
+    <div id='root'>
+        <h3>{{name}}</h3>
+        <input type="text" placeholder="输入内容后按回车获取输入内容" @keydown="showInfo"><br> <!--按下按键就触发事件-->
+        <input type="text" placeholder="按下回车键隐藏输入框" @keydown.enter="showInfo2"><br> <!--按下回车键才触发事件-->
+        <input type="text" placeholder="按下Ctrl+y更换背景颜色" @keydown.ctrl.y="showInfo3"><br> <!--按下Ctrl+y才触发事件-->
+
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            name: '键盘事件',
+        },
+        methods: {
+            showInfo(e) {
+                console.log(e.key, e.keyCode)    // key属性为按键的名称，keyCode属性为按键的编码
+                if (e.keyCode != 13) return 
+                /* 如果按键的编码不等于13（Enter键的编码），则结束当前函数，即不打印输入的值。
+                意思就是持续输入值，当按下回车键时，一次性打印输入的值 。直接搭配按键别名使用更方便：keydown.enter*/
+                console.log(e.target.value)
+            },
+            showInfo2(e) {
+                e.target.type = 'hidden'
+            },
+            showInfo3(e) {
+                e.target.style = "background-color:skyblue"
+            }
+
+        }
+    });
+
+</script>
+
+</html>

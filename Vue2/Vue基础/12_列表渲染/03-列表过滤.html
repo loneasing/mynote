@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>列表过滤</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <div id='root'>
+        <h2>watch实现</h2>
+        <input type="text" placeholder="请输入名字" v-model="keyWord">
+        <ul>
+            <li v-for="(p,index) of filPersons" :key="index">
+                {{p.name}}-{{p.age}}-{{p.sex}}
+            </li>
+        </ul>
+    </div>
+
+    <div id='root2'>
+        <h2>computed实现</h2>
+        <input type="text" placeholder="请输入名字" v-model="keyWord">
+        <ul>
+            <li v-for="(p,index) of filPersons" :key="index">
+                {{p.name}}-{{p.age}}-{{p.sex}}
+            </li>
+        </ul>
+    </div>
+</body>
+
+<script type='text/javascript'>
+
+    // 下面用watch和computed实现查找对象数组中name属性值中包含指定字符的对象。
+
+    //用watch实现
+    new Vue({
+        el: '#root',
+        data: {
+            keyWord: '',    // 过滤关键字
+            persons: [
+                { id: '001', name: '马冬梅', age: 19, sex: '女' },
+                { id: '002', name: '周冬雨', age: 20, sex: '女' },
+                { id: '003', name: '周杰伦', age: 21, sex: '男' },
+                { id: '004', name: '温兆伦', age: 22, sex: '男' }
+            ],
+            filPersons: []   // 定义一个数组用于接收过滤后的数据
+        },
+        watch: {
+            keyWord: {
+                immediate: true,
+                 /* 因为filPersons的值为空数组，所以需要初始化时调用一次handler()函数，调用handler()函数时拿到的参数val
+                    是空字符串""，而所有字符串都默认包含空字符串，并且空字符串在字符串中的索引为0。所以正好根据空串查出所有的数据。
+                */
+                handler(val) {
+                    this.filPersons = this.persons.filter((p) => {   // filter为过滤函数，内部需要传入一个函数充当过滤条件，函数的返回值为true或false
+                        return p.name.indexOf(val) !== -1   //indexof返回值是指定字符对应的索引，若没有包含该字符则返回-1
+                    })
+                }
+            }
+        }
+    })
+
+    //用computed实现
+    new Vue({
+        el: '#root2',
+        data: {
+            keyWord: '',
+            persons: [
+                { id: '001', name: '马冬梅', age: 19, sex: '女' },
+                { id: '002', name: '周冬雨', age: 20, sex: '女' },
+                { id: '003', name: '周杰伦', age: 21, sex: '男' },
+                { id: '004', name: '温兆伦', age: 22, sex: '男' }
+            ]
+        },
+        computed: {
+            filPersons() {
+                // 计算属性依赖返回值
+                return this.persons.filter((p) => {
+                    // 计算属性中的get()函数在初始化时就默认调用一次，所以传入keyWord的空值也可以过滤出所有的元素。
+                    return p.name.indexOf(this.keyWord) !== -1
+                })
+            }
+        }
+    }) 
+</script>
+
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title></title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+            
+            遍历时标签中的属性key是什么？
+                key需要使用v-bind指令绑定供Vue使用。
+                key是Vue遍历出来的元素(虚拟DOM对象)的唯一标识，然后通过虚拟DOM对象生成真实DOM对象后并去除真实DOM对象的key属性，即在页面中看不到属性key。
+                key只在虚拟DOM中使用，不会出现在真实的DOM中。(DOM就是元素对象的集合)
+
+    		1.虚拟DOM中key的作用：
+    				key是虚拟DOM对象的标识，当数据发生变化时，Vue会根据【新数据】生成【新的虚拟DOM】, 
+    				随后Vue进行【新虚拟DOM】与【旧虚拟DOM】的差异比较再生成【新真实DOM】，比较规则如下：
+    			    (1) 旧虚拟DOM中与新虚拟DOM中相同key的DOM对象(元素)进行对比：
+                        ①.变化的内容，使用新的虚拟DOM对象生成新的真实DOM对象。
+    				    ②.没变的内容，直接复用旧的真实DOM对象。
+                        （一个DOM对象中可以能有多个DOM对象，其中没有变化的DOM对象可以被复用）
+    			    (2) 旧虚拟DOM中未找到与新虚拟DOM中相同key的元素，则创建新的真实DOM对象，随后渲染到到页面。
+    								
+    		2.用index作为key可能会引发的问题：
+    			(1) 若对数据进行：逆序添加、逆序删除等破坏顺序操作，会产生没有必要的真实DOM更新 ==> 界面效果没问题, 但效率低。
+    			(2) 如果结构中还包含输入类(比如输入框)的DOM对象，会产生错误DOM更新 ==> 界面有问题。
+
+    		3.开发中如何选择key?:
+    			(1) 最好使用每条数据的唯一标识作为key, 比如id、手机号、身份证号、学号等唯一值。
+    		    (2) 如果不存在对数据的逆序添加、逆序删除等破坏顺序操作，仅用于渲染列表用于展示，使用index作为key是没有问题的。
+    -->
+    <div id='root'>
+        <!-- 遍历数组 -->
+        <button @click.once="add">添加一个老刘</button>
+        <ul>
+            <!--
+                在数组的开头添加一个元素，打乱了数据的顺序，使用index作为key会出现问题。 -->
+            <li v-for="(p,index) of persons" :key="index"> <!-- :key="p.id" 这样就不会出现问题-->
+
+                {{p.name}}-{{p.age}}
+
+                <!-- 在输入框中输入内容，然后添加元素，会发现之前索引为0的节点中输入框中的内容，
+                    会变成新添加元素节点的输入框的内容，因为文本框中的内容不会出现在虚拟DOM中，所以虚拟DOM会判定文本框内容没变，
+                    从而根据索引复用文本框内容到新的真实DOM中。这就是使用index作为key，数据顺序被打乱后出现的问题之一。-->
+                <input type="text">
+            </li>
+        </ul>
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            persons: [
+                { id: '001', name: '张三', age: 18 },
+                { id: '002', name: '李四', age: 19 },
+                { id: '003', name: '王五', age: 20 }
+            ]
+        },
+        methods: {
+            add() {
+                const p = { id: '004', name: '老刘', age: 40 }
+                this.persons.unshift(p) // 在person数组的开头添加一个元素p
+                /*
+                    unshift()：在数组的开头添加元素，返回值为数组长度
+                    shift()：删除数组第一个元素并返回该元素
+                    push()：在数组的开头添加元素，并返回添加的元素。
+                    pop()：删除数的最后一个元素，并返回该元素。
+                */
+            }
+        },
+    });
+</script>
+
+</html>

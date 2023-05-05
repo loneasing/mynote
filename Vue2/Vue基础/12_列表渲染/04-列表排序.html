@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>列表排序</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <div id='root'>
+        <h2>人员列表</h2>
+        <input type="text" placeholder="请输入名字" v-model="keyWord">
+        <button @click="sortType = 2">年龄升序</button>
+        <button @click="sortType = 1">年龄降序</button>
+        <button @click="sortType = 0">默认顺序</button>
+        <ul>
+            <li v-for="(p,index) of filPersons" :key="p.id">
+                {{p.name}}-{{p.age}}-{{p.sex}}
+            </li>
+        </ul>
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            keyWord: '',    // 搜索关键字
+            sortType: 0,    // 设置一个排序的属性：0默认 1降序 2升序
+            persons: [
+                { id: '001', name: '马冬梅', age: 22, sex: '女' },
+                { id: '002', name: '周冬雨', age: 23, sex: '女' },
+                { id: '003', name: '周杰伦', age: 18, sex: '男' },
+                { id: '004', name: '温兆伦', age: 19, sex: '男' }
+            ]
+        },
+        computed: {
+            filPersons() {
+                const arrFilter = this.persons.filter((p) => {  // 获取到过滤后的数据先不要返回，后面判断是否需要排序
+                    return p.name.indexOf(this.keyWord) !== -1
+                })
+                // 判断是否需要排序
+                if (this.sortType) {    // sortType为0不需要排序
+                    /*
+                        sort(Function(a,b))方法需要传入一个比较函数作为参数。比较函数又需要两个数组中元素类型的参数。
+                        若函数返回值是a-b，则表示升序。
+                        若函数返回值是b-a，则表示降序。
+                        原理：返回值小于0，则a排在前面，b排在后面；返回值大于0，则a排在后面，b排在前面。
+                        记住不要管返回值是大于0还是小于0.只要看返回值是a-b还是b-a。
+                    */
+                    arrFilter.sort((p1, p2) => {    // 传入两个数组中同类型的参数
+                        return this.sortType === 1 ? p2.age - p1.age : p1.age - p2.age  // 使用它们的age属性进行比较
+                    })
+                }
+                return arrFilter
+            }
+        }
+    });
+</script>
+
+</html>

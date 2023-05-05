@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>组件的嵌套</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <div id='root'>
+        <!-- <app>hello</app> 组件标签中不可以写内容，写了也没用 -->
+    </div>
+</body>
+
+<script type='text/javascript'>
+    // 定义student组件 
+    const student = Vue.extend({
+        template: `
+            <div>
+                <h3>学生姓名：{{name}}</h3>    
+                <h3>学生年龄：{{age}}</h3>
+            </div>
+        `,
+        data() {
+            return {
+                name: 'Alice',
+                age: 20
+            }
+        }
+    })
+
+    //定义school组件
+    const school = Vue.extend({
+        name: 'school',
+        template:   // school组件中嵌入student组件
+            `
+				<div>
+					<h3>学校名称：{{name}}</h3>	
+					<h3>学校地址：{{address}}</h3>	
+					<student></student>
+				</div>
+			`,
+        data() {
+            return {
+                name: '哔哩哔哩',
+                address: '上海'
+            }
+        },
+        components: {   // 组件中也可以注册组件
+            student
+        }
+    })
+
+    //定义hello组件
+    const hello = Vue.extend({
+        template: `<h2>{{msg}}</h2>`,
+        data() {
+            return {
+                msg: '欢迎来到哔哩哔哩学习！'
+            }
+        }
+    })
+
+    // 一般定义一个组件用于管理所有的组件，这个组件名叫app
+    const app = {
+        template:   // 直接在模板中使用组件
+            `
+            <div>
+                <hello></hello>
+                <school></school>    
+            </div>
+        `,
+        components: {
+            school,
+            hello
+        }
+    }
+
+    const vm = new Vue({
+        el:'#root',
+        template:`<app></app>`, // 这个app标签会替换掉el绑定的标签
+        components: { app } 
+    });
+</script>
+
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>绑定样式</title>
+    <style>
+        .basic {
+            width: 200px;
+            height: 100px;
+            border: 1px solid black;
+        }
+
+        .happy {
+            border: 1px solid red;
+            ;
+            background-color: rgba(255, 255, 0, 0.644);
+            background: linear-gradient(30deg, yellow, pink, orange, yellow);
+        }
+
+        .sad {
+            border: 1px dashed rgb(2, 197, 2);
+            background-color: gray;
+        }
+
+        .normal {
+            background-color: skyblue;
+        }
+
+        .a {
+            background-color: yellowgreen;
+        }
+
+        .b {
+            font-size: 30px;
+            text-shadow: 2px 2px 10px red;
+        }
+
+        .c {
+            border-radius: 20px;
+        }
+    </style>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+			绑定样式：
+					1. class样式: 【:class="xxx"】，xxx可以是字符串、对象、数组。
+							字符串适用于：类名不确定，要动态获取。
+							对象适用于：要绑定多个样式，个数不确定，名字也不确定。
+							数组适用于：要绑定多个样式，个数确定，名字也确定，但不确定用不用。
+					2. style样式
+						    :style="{fontSize: xxx}"    其中xxx是动态值。
+							:style="[a,b]"  其中a、b是样式对象。
+-->
+    <!-- 准备一个容器-->
+    <div id="root">
+        <!-- 绑定class样式：字符串形式 -->
+        <div class="basic" :class="mood" @click="changeMood">{{name}}</div> <br /><br />
+        <!-- Vue最终会将:class的值合并到class中 -->
+
+        <!-- 绑定class样式：数组形式 -->
+        <div class="basic" :class="classArr">{{name}}</div> <br /><br />
+
+        <!-- 绑定class样式：对象形式 -->
+        <div class="basic" :class="classObj">{{name}}</div> <br /><br />
+
+        <!-- 绑定style样式：对象形式 -->
+        <div class="basic" :style="styleObj">{{name}}</div> <br /><br />
+
+        <!-- 绑定style样式：数组形式 -->
+        <div class="basic" :style="styleArr">{{name}}</div>
+    </div>
+</body>
+
+<script type='text/javascript'>
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            name: 'Hello',
+            // 类名字符串
+            mood: 'normal',
+            // 类名数组
+            classArr: ['a', 'b', 'c'],  // 数组元素为字符串时要加引号
+            // 类名对象
+            classObj: {
+                a: false,   // 类名写成键的时候可以不加引号
+                j: false,   // true表示添加该类名，false表示不添加该类名
+            },
+            // style样式：样式对象
+            styleObj: {
+                fontSize: '40px',   // 样式属性名中有“-”的需要写成小驼峰命名，比如font-size => fontSize
+                color: 'red',
+            },
+            styleObj2: {
+                backgroundColor: 'orange'
+            },
+            // style样式：样式数组，数组中为样式对象
+            styleArr: [
+                {
+                    fontSize: '40px',
+                    color: 'blue',
+                },
+                {
+                    backgroundColor: 'gray'
+                },
+               //styleObj2 貌似不能这样写
+            ]
+        },
+        methods: {
+            // 点击元素随机改变心情
+            changeMood() {
+                const arr = ['happy', 'sad', 'normal']  
+                const index = Math.floor(Math.random() * 3) // 获取0,1,2
+                this.mood = arr[index]
+            }
+        },
+    });
+</script>
+
+</html>

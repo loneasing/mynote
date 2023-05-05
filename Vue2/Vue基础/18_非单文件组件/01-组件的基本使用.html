@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>组件的基本使用</title>
+    <script type='text/javascript' src='../js/vue.js'></script>
+</head>
+
+<body>
+    <!-- 
+        非单文件组件：一个文件中有多个组件
+        单文件组件：一个文件中只有一个组件
+
+
+    	Vue中使用组件的三大步骤：
+    	    (1)定义组件:   Vue.extend(options)
+                        其中options和new Vue(options)时传入的options几乎一样，但也有点区别；
+    			        1.el不要写，为什么？ ——— 最终所有的组件都要经过一个vm的管理，由vm中的el决定服务哪个容器。
+    			        2.data必须写成函数，为什么？ ———— 避免组件被复用时，数据存在引用关系。
+    			        3.使用template配置组件结构。
+
+    	    (2)注册组件：
+    		    	    1.局部注册：new Vue({ components: {} })
+    			        2.全局注册：Vue.component('组件名',组件)
+
+    	    (3)编写组件标签： <组件名></组件名>   或者    <组件名 /> （此写法要在脚手架中使用）
+                        - 组件标签所代表内容就是组件中template配置的内容。
+                        - 编写一个组件标签，Vue就创建了一个组件实例对象（new VueComponent()）。
+
+        几个注意点：
+            - 关于组件名:
+                - 一个单词组成：
+                    - 第一种写法(首字母小写)：school
+                    - 第二种写法(首字母大写)：School
+                - 多个单词组成：
+                    - 第一种写法(kebab-case命名)：my-school
+                    - 第二种写法(CamelCase命名)：MySchool (需要Vue脚手架支持)
+                组件名尽可能回避HTML中已有的元素名称，例如：h2、H2都不行。
+                可以使用name配置项指定组件在开发者工具中呈现的名字。
+
+            - 关于组件标签:
+                - 第一种写法：<school></school>
+                - 第二种写法：<school/> 这种写法写多个时要在脚手架中才有作用
+        
+            - 一个简写方式：const school = Vue.extend(options) 可简写为：const school = options
+    -->
+    <div id='root'>
+        <h3>{{msg}}</h3>
+        <hr>
+        <!-- 第三步：编写组件标签 -->
+        <book></book> <!-- book标签的内容就是book组件中template模板内容-->
+        <hello></hello>
+
+    </div>
+
+    <!-- hello组件定义成了全局组件，所以其他Vue实例也可以使用，前提是Vue实例要创建在组件注册之后 -->
+    <div id="root2">
+        <hello></hello>
+    </div>
+</body>
+
+<script type='text/javascript'>
+
+    /*第一步：定义book组件*/
+    const bookComponent = Vue.extend({
+        // el:'#root', //组件定义时，一定不要写el配置项，因为最终所有的组件都要被一个vm管理，由vm决定服务于哪个容器。
+        // template用来编写组件模块的结构
+        template: `
+				<div class="demo">
+					<h2>书名：{{bookName}}</h2>
+					<h2>省份：{{price}}</h2>
+					<button @click="showInfo">点我查看信息</button>	
+				</div>
+			`,
+        // 数据项一定要用函数的形式
+        data() {
+            return {
+                bookName: 'Old Boy',
+                price: 99
+            }
+        },
+        methods: {
+            showInfo() {
+                alert('书名:' + this.bookName + ',价格:' + this.price)
+            }
+        },
+    })
+
+    /*第一步：定义hello组件*/
+    /*     const hello = Vue.extend({
+            name:'haha', // haha是在Vue的开发者工具中显示的组件名
+            template: `
+                    <div>
+                        <h3>{{msg}}</h3>
+                    </div>
+                `,
+            data() {
+                return {
+                    msg: 'i miss you'
+                }
+            }
+        }) */
+
+    // 定义hello组件 省略Vue.extend
+    const hello = {
+        name: 'haha', // haha是在Vue的开发者工具中显示的组件名
+        template: `
+				<div>
+					<h3>{{msg}}</h3>
+				</div>
+			`,
+        data() {
+            return {
+                msg: 'i miss you'
+            }
+        }
+    }
+
+    // 全局注册组件
+    Vue.component('hello', hello)
+
+    new Vue({
+        el: '#root',
+        data: { // 即使配置的组件中有data了，vm也还是可以配置data
+            msg: '我爱读书!'
+        },
+        // 组件项
+        components: {
+            /*第二步：局部注册组件*/
+            book: bookComponent,  //book为注册的组件名，bookComponent为定义的组件，一般习惯将这两个写成同名，这样就可以使用对象的简写形式，如下hello所示
+            hello   // hello:hello
+
+            // 也可以直接定义components中
+            /*  hello: {
+                 template: `
+                 <div>
+                     <h3>{{msg}}</h3>
+                 </div>
+             `,
+                 data() {
+                     return {
+                         msg: 'i miss you'
+                     }
+                 }
+             } */
+        }
+    })
+
+    new Vue({
+        el: '#root2',
+    })
+</script>
+
+</html>
