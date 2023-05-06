@@ -141,15 +141,15 @@ new Vue({
 
 ## 2. 标签的ref属性
 
-> **定义**：用来给元素或子组件注册引用信息（id的替代者），所有的ref都储存在vm或vc的$refs属性中。
+> **定义**：用来给元素或子组件注册引用信息（id的替代者），所有的ref都存储在vm或vc的$refs属性中。
 >
-> 若ref标记在html标签上，则通过vm.$refs获取的是真实DOM元素。
+> 使用ref标记元素或组件：`<div ref="xxx">.....</div>` 或 `<School ref="xxx"></School>`
 >
-> 若ref标记在组件标签上，则通过vm.$refs获取的是组件实例对象。
+> 获取ref标记的元素对象或组件实例：`this.$refs.xxx`（this指Vue实例或者VueComponent实例）
 >
-> 使用ref标记元素或组件：<div ref="xxx">.....</div> 或 <School ref="xxx"></School>
+> 若ref标记在html标签上，则通过vm.$refs.xxx获取的是真实DOM元素。
 >
-> 获取ref标记的元素对象或组件实例：this.$refs.xxx（this指Vue实例或者VueComponent实例）
+> 若ref标记在组件标签上，则通过vm.$refs.xxx获取的是组件实例对象。
 
 代码演示：
 
@@ -188,7 +188,7 @@ export default {
 
 props配置项接收的数据也会被代理到组件实例上，并且**props配置项的优先级比data配置项高**。即传递过来的参数中有与data中同名的参数时，优先取props中的参数。
 
-**传递数据**：<组件标签 name="Alice" age="18" sex="女"/>，注意标签中的属性的值都是字符串类型，需要传递数值型数据需要使用数据绑定，比如<School :age="20"/>，这样传递的就是数值型的20。
+**传递数据**：<组件标签 name="Alice" age="18" sex="女"/>，注意标签中的属性的值都是字符串类型，需要传递数值型数据需要使用数据绑定，比如`<School :age="20"/>`，这样传递的就是数值型的20。
 
 ```vue
 <Student name="Alice" sex="女" :age="20"/>
@@ -289,7 +289,7 @@ export default {
 
 mixin配置项比data和methods配置项加载的更早，因此可以在data或methods中可以获取到mixin中的配置；
 
-data的优先级比mixin的优先级更高。不过mixin中的mounted()函数比当前组件的mounteda()函数先执行。
+data的优先级比mixin的优先级更高。不过mixin中的mounted()函数比当前组件的mounted()函数先执行。
 
 下面定义混入配置：
 
@@ -1160,13 +1160,13 @@ export default {
 
 ① 首先需要一个“傀儡”作为信息的载体，这个“傀儡”是全部组件都能看见的，所以可以考虑将这个傀儡放在`window`或者`Vue的原型`或者`VueComponent的原型`上。
 
-② 其次这个傀儡还要能被操控，即拥有`$on()`、`$emit()`、`$off()`等方法，这些方法在Vue的原型上，所以这个傀儡必须是vm或vc。
+② 其次这个“傀儡”还要能被操控，即拥有`$on()`、`$emit()`、`$off()`等方法，这些方法在Vue的原型上，所以这个傀儡必须是vm或vc。
 
-③ 然而不建议给window添加属性(window.xxx = vm)，所以考虑这个傀儡放在Vue或者VueComponent的原型上。
+③ 然而不建议给window添加属性(window.xxx = vm)，所以考虑这个”傀儡“放在Vue或者VueComponent的原型上。
 
-④ 因为不同的vc是由不同的VueComponent创建出来的，如果将“傀儡”放在VueComponent原型上这样就会有很多个“傀儡”，但是Vue只有一个，并且VueComponent的原型指向了Vue的原型，vc可以访问的到Vue的原型上的“傀儡”。因此傀儡放在Vue的原型上。
+④ 因为不同的vc是由不同的VueComponent创建出来的，如果将“傀儡”放在VueComponent原型上这样就会有很多个“傀儡”，但是Vue只有一个，并且VueComponent的原型指向了Vue的原型，vc可以访问的到Vue的原型上的“傀儡”。因此”傀儡“放在Vue的原型上。
 
-⑤ 再说这个“傀儡”可以是vm或者vc，但是vc不容易获取：const Vc = Vue.extend({}); const vc = new Vc() 。因此使用vm作为傀儡。
+⑤ 再说这个“傀儡”可以是vm或者vc，但是vc不容易获取：const Vc = Vue.extend({}); const vc = new Vc() 。因此使用vm作为”傀儡“。
 
 ⑥ 一般这个“傀儡”一般使用`$bus`作为变量名：`Vue.prototype.$bus = new Vue()`
 
@@ -2080,7 +2080,7 @@ Category子组件：
 
 **安装Vuex**：`npm i vuex@3`
 
-> 这里需要注意Vue2版本只能使用Vuex3版本，Vue3版本次啊能使用Vuex3之后的版本。
+> 这里需要注意Vue2版本只能使用Vuex3版本，Vue3版本才能使用Vuex3之后的版本。
 
 **导入Vuex**：`import Vuex from 'vuex'`
 
@@ -3244,7 +3244,7 @@ props:['id','title','a','b']
 
 push方式跳转路由，会留下历史记录，可以点击浏览器的左上角的箭头回退到上一个路由组件 
 
-replacef方式跳转路由，不会留下历史记录，不可以回退到『上一个』路由组件。路由跳转默认是push方式写入历史记录。
+replace方式跳转路由，不会留下历史记录，不可以回退到『上一个』路由组件。路由跳转默认是push方式写入历史记录。
 
 如何开启replace方式：给router-link标签添加replace属性:`<router-link replace></router-link>`
 
@@ -3318,7 +3318,7 @@ methods: {
 *一般不需要全部缓存下来，而是将include使用数据绑定将值写成数组形式指定不需要被销毁的路由组件。* 
 
 ```html
-<!-- 跳转路由后News组件都不会被销毁 -->
+<!-- 跳转路由后News组件不会被销毁 -->
 <keep-alive include="News"><router-view></router-view></keep-alive>
 <!-- 路由跳转后New、Message组件都不会被销毁 -->
 <keep-alive :include="['News','Message']"><router-view></router-view></keep-alive>
@@ -3342,7 +3342,7 @@ activated() {
 	console.log('News组件被激活了')
 	this.timer = setInterval(() => {},1000)	// 定时器返回的是该定时器的唯一标识
 },
-// 组件是失活时被调用
+// 组件失活时被调用
 deactivated() {
 	console.log('News组件失活了')
 	clearInterval(this.timer)// 清除定时器，参数为定时器的唯一标识
@@ -3390,7 +3390,7 @@ const router =  new VueRouter({
 			name:'about',
 			path:'/about',
 			component: About,
-			// meta配置项，它的值是一个对象，我们自定义的一些属性就放在该配置项里面，比如权是否需要鉴权
+			// meta配置项，它的值是一个对象，我们自定义的一些属性就放在该配置项里面，比如是否需要鉴权
 			meta:{title:'关于'}
 			
 		},
