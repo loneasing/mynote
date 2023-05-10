@@ -1,5 +1,7 @@
 ## SpringBoot整合Redis
 
+
+
 ### 1. SpringBoot集成Jedis
 
 Jedis是一个Java语言的Redis客户端，它提供了方便的API，使得在Java应用程序中使用Redis非常容易。
@@ -217,6 +219,8 @@ public class LettuceDemo {
 
 ### 3. SpringBoot集成RedisTemplate
 
+redisTemplate是Spring Framework提供的一个用于操作Redis数据库的模板类，它是对jedis和lettuce的封装，默认使用lettuce客户端。
+
 (1) 首先导入依赖：
 
 ```xml
@@ -227,7 +231,30 @@ public class LettuceDemo {
   </dependency>
 ```
 
-(2) 使用RedisTemplate
+(2) 编写配置文件
+
+```yml
+spring:
+  data:
+    redis:
+      database: 0
+      host: 192.168.101.110
+      port: 6379
+      password: 123456
+      # redisTemplate默认使用lettucek
+      lettuce:
+        pool:
+          max-active: 8     # 最大连接数
+          max-wait: -1ms    # 连接等待时间
+          max-idle: 8       # 最大空闲连接
+          min-idle: 0       # 最小空闲连接
+```
+
+可以通过设置client-type的值更改redis客户端类型：
+
+<img src="img/2023-05-11_035050.png" alt="2023-05-11_035050" style="zoom:80%;" />
+
+(3) 使用RedisTemplate
 
 ```java
 @SpringBootTest
