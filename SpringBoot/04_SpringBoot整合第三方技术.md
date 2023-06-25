@@ -136,7 +136,7 @@ public class Book {
 
 **(3) 编写映射接口**
 
-##### *@mapper*
+##### *@Mapper*
 
 > 注解`@Mapper`的作用是将Mapper接口交由Spring管理并且为其生成代理对象，这样不需要再配置Mapper接口扫描了
 

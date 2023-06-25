@@ -219,7 +219,15 @@ public class LettuceDemo {
 
 ### 3. SpringBoot集成RedisTemplate
 
-redisTemplate是Spring Framework提供的一个用于操作Redis数据库的模板类，它是对jedis和lettuce的封装，默认使用lettuce客户端。
+Spring提供了Spring Data Redis的启动器，Spring Data Redis中提供了一个高度封装的类：RedisTemplate，该类对jedis和lettuce客户端中的api进行了归类封装，将同一类型的操作封装为operation接口，具体分类如下：
+
+- ValueOperations：操作String类型数据的对象，通过opsForValue()获得。
+- SetOperations：操作Set类型数据的对象，通过opsForSet()获得。
+- ZsetOperations：操作Zset类型数据的对象，通过opsForZset()获得。
+- HashOperations：操作map类型的对象，通过opsForHash()获得。
+- ListOperations：操作List类型的对象，通过opsForList()获得。
+
+RedisTemplate是Spring Framework提供的一个用于操作Redis数据库的模板类，它是对jedis和lettuce的封装，默认使用lettuce客户端
 
 (1) 首先导入依赖：
 
@@ -266,7 +274,7 @@ public class RedisTemplateDemo {
 
     @Test
     void testString(){
-        // opsForValue()返回一个操作String类型数据的对象
+        // opsForValue()返回一个操作String类型数据的对象ValueOperations
         ValueOperations op = redisTemplate.opsForValue();
         op.set("k1","v1");
         op.get("k1");
@@ -274,7 +282,7 @@ public class RedisTemplateDemo {
 
     @Test
     void testList(){
-        // opsForList()返回一个操作List类型数据的对象
+        // opsForList()返回一个操作List类型数据的对象ListOperations
         ListOperations op = redisTemplate.opsForList();
         // 存入一个值到List列表中：left()
         op.leftPush("myList","张三");
@@ -291,7 +299,7 @@ public class RedisTemplateDemo {
 
     @Test
     void testHash(){
-        // opsForHash()返回一个操作Hash类型数据的对象
+        // opsForHash()返回一个操作Hash类型数据的对象HashOperations
         HashOperations op = redisTemplate.opsForHash();
         // 存入数据到Hash表中：put()
         op.put("myHash","age","20");
@@ -303,7 +311,7 @@ public class RedisTemplateDemo {
 
     @Test
     void testSet(){
-        // opsForSet()返回一个操作Set类型数据的对象
+        // opsForSet()返回一个操作Set类型数据的对象SetOperations
         SetOperations op = redisTemplate.opsForSet();
         // 存入数据到Set集合中：add()
         op.add("mySet","v1","v2","v3","v4","v5");
@@ -313,12 +321,28 @@ public class RedisTemplateDemo {
 
     @Test
     void testZSet(){
-        // opsForZSet()返回一个操作ZSet类型数据的对象
+        // opsForZSet()返回一个操作ZSet类型数据的对象ZSetOperations
         ZSetOperations op = redisTemplate.opsForZSet();
         op.add("myZSet","Alice",10);
         op.add("myZSet","Bryan",20);
         // 遍历ZSet集合中的所有
         Set myZSet = op.range("myZSet", 0, -1);
+    }
+    
+    //通用操作
+    @Test
+    void testCommon(){
+        // 获取所有的key
+        Set<String> keys = redisTemplate.keys("*");
+        for ( String kye : keys ) {
+            System.out.println(key);
+        }
+        // 判断某个key是否存在
+        Boolean flag = redisTemplate.hasKey("hello");
+        // 删除指定的key
+        redisTemplate.delete("hello");
+        // 获取指定key的数据类型
+        DataType type = redisTemplate.type("hello");
     }
 }
 ```
@@ -424,4 +448,4 @@ public class StringRedisTemplateDemo {
 
 ![2023-05-10_221334](img/2023-05-10_221334.png)
 
-可以看到占用内存大小笑了很多，这种方式需要手动序列化比较麻烦，但是可以将这个操作封装成一个操作类。推荐使用这种方式。
+可以看到占用内存大小小了很多，这种方式需要手动序列化比较麻烦，但是可以将这个操作封装成一个方法。推荐使用这种方式。

@@ -435,7 +435,7 @@ class TestApplication {
 
 ###### *webEnvironment*
 
-`@SpringBootTest`注解中有一个叫做`webEnvironment`，通过该属性就可以设置在测试用例中启动web环境。
+`@SpringBootTest`注解中有一个叫做`webEnvironment`的属性，通过该属性就可以设置在测试用例中启动web环境。
 
 使用方式：`@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)`
 

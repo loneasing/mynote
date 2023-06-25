@@ -134,6 +134,8 @@ mybatis-plus:
       id-type: auto			#设置主键id字段的生成策略为参照数据库设定的策略，当前数据库设置id生成策略为自增
 ```
 
+###### *BaseMapper接口*
+
 编写Mapper接口：
 
 > 这里使用MP提供的快速开发数据层的`BaseMapper`接口，其内部提供了简单的增删改查操作方法。
@@ -255,7 +257,7 @@ public class BookServiceImpl implements BookService {
 }
 ```
 
-
+###### *IPage接口*
 
 下面使用MyBatisPlus进行分页：
 
@@ -312,6 +314,8 @@ public class BookServiceImpl implements BookService {
 
 ##### (3) 条件查询
 
+###### *QueryWrapper对象*
+
 QueryWrapper对象是一个用于封装查询条件的对象，该对象可以动态调用API方法添加条件，最终转化成对应的SQL语句。
 
 > QueryWrapper类继承了AbstractWrapper类，AbstractWrapper继承了Wrapper类还实现了Compare<Children, R>接口。
@@ -339,7 +343,7 @@ QueryWrapper对象是一个用于封装查询条件的对象，该对象可以�
         QueryWrapper<Book> qw = new QueryWrapper<>(); // 创建封装操作类对象
 
         //下面语句表示封装sql语句“ select * from tb_book name like %spring% ”成一个QueryWrapper的对象。
-        qw.like("name", "spring");//第一个参数为字段名，第二个参数为匹配词。
+        qw.like("name", "spring");//第一个参数为要访问该字段，即进行模糊查询的字段。第二个参数为匹配词。
 
         List<Book> books = bookMapper.selectList(qw); // 查询name包含“spring”的Book。
         books.forEach(book -> {
@@ -347,6 +351,8 @@ QueryWrapper对象是一个用于封装查询条件的对象，该对象可以�
         });
     }
 ```
+
+###### *LambdaQueryWrapper对象*
 
 MP针对字段检查进行了功能升级，全面支持Lambda表达式，由QueryWrapper对象升级为LambdaQueryWrapper对象
 
@@ -361,7 +367,7 @@ MP针对字段检查进行了功能升级，全面支持Lambda表达式，由Que
 void testGetBy2(){
     String name = "1";
     LambdaQueryWrapper<Book> lqw = new LambdaQueryWrapper<Book>();
-    // 第二个参数使用了方法引用获取name的值，相当于new Book().getName()
+    // 第二个参数使用了方法引用访问name字段，相当于new Book().getName()
     lqw.like(Strings.isNotEmpty(name),Book::getName,"spring");// name值不为空则执行like方法
     bookMapper.selectList(lqw);
 }
@@ -447,6 +453,8 @@ public class BookServiceImpl implements BookService {
 
 ##### (2) 快速开发
 
+###### IService接口
+
 MP框架不仅提供了数据层快速开发的接口`BaseMapper`，MP也提供了业务层快速开发的接口`IService`，实际开发还是尽量不要用。
 
 首先自定义一个业务层接口继承MP提供的`IService`接口：
@@ -457,6 +465,8 @@ public interface IBookService extends IService<Book> {
     IPage<Book> getPage(Integer pageNum,Integer pageSize);
 }
 ```
+
+###### ServiceImpl类
 
 创建自定接口的实现类同时继承MP中的`ServiceImpl`类：
 
@@ -562,6 +572,8 @@ public class IBookServiceTest {
 
 
 #### 5. 表现层开发
+
+##### *@RequestBody*
 
 表现层基于Restful进行表现层接口开发，功能测试使用Apifox工具进行
 
@@ -1013,14 +1025,17 @@ public class R {
 }
 ```
 
-定义一个异常处理器：
+###### *@ControllerAdvice*
+
+使用@ControllerAdvice注解标记为异常处理器，它的作用是捕获处理异常。
+
+###### *@RestControllerAdvice*
+
+使用@RestControllerAdvice注解标记为异常处理器，该注解相较于上一个包含了@ResponseBody的功能。
+
+下面定义一个异常处理器：
 
 ```Java
-/* 定义一个异常处理器：
-*  使用@ControllerAdvice注解标记为异常处理器，它的作用是捕获处理异常。
-*  使用@RestControllerAdvice注解标记为异常处理器，该注解相较于上一个包含了@ResponseBody的功能。
-*
-* */
 @RestControllerAdvice
 public class MyExceptionAdvice {
 
