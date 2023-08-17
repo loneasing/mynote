@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>酒店管理</title>
+  <link href="./css/main.css" rel="stylesheet">
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+
+</head>
+<body>
+<div id="app">
+  <h1>酒店数据管理</h1>
+  <div class="add-btn" >
+    <el-button type="primary" size="small" @click="beginAdd">新增酒店</el-button>
+  </div>
+  <el-table
+      :data="hotels"
+      border
+      style="width: 100%">
+    <el-table-column
+        v-for="h in headers" :key="h.prop"
+        :prop="h.prop"
+        :label="h.text"
+        :width="h.width"
+        :align="h.align"
+    >
+    </el-table-column>
+    <el-table-column align="center" label="操作" :width="150">
+      <template slot-scope="scope">
+        <el-button type="primary" plain icon="el-icon-edit" circle size="mini"
+                   @click="handleEdit(scope.$index, scope.row)"></el-button>
+        <el-button type="danger" plain icon="el-icon-delete" circle size="mini"
+                   @click="handleDelete(scope.$index, scope.row)"></el-button>
+      </template>
+    </el-table-column>
+  </el-table>
+  <el-pagination
+      @current-change="query"
+      style="margin-top: 5px"
+      background
+      :page-size="5"
+      layout="prev, pager, next"
+      :total="total">
+  </el-pagination>
+  <el-dialog title="酒店信息" :visible.sync="formVisible" width="30%" style="padding: 0 20px;">
+    <el-form :model="hotel" size="small" label-position="left" :label-width="formLabelWidth">
+      <el-form-item label="酒店名称" >
+        <el-input v-model="hotel.name" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="酒店地址" >
+        <el-input v-model="hotel.address" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="酒店价格" >
+        <el-input v-model="hotel.price" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="酒店评分">
+        <el-input v-model="hotel.score" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="酒店品牌">
+        <el-input v-model="hotel.brand" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="所在城市">
+        <el-input v-model="hotel.city" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="所在商圈">
+        <el-input v-model="hotel.business" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="酒店图片" >
+        <el-input v-model="hotel.pic" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="酒店纬度" >
+        <el-input v-model="hotel.latitude" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="酒店经度" >
+        <el-input v-model="hotel.longitude" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="星级" >
+        <el-select style="width: 263px" v-model="hotel.starName" placeholder="请选择酒店星级">
+          <el-option label="一星级" value="一星级"></el-option>
+          <el-option label="二星级" value="二星级"></el-option>
+          <el-option label="三星级" value="三星级"></el-option>
+          <el-option label="四星级" value="四星级"></el-option>
+          <el-option label="五星级" value="五星级"></el-option>
+          <el-option label="一钻" value="一钻"></el-option>
+          <el-option label="两钻" value="两钻"></el-option>
+          <el-option label="三钻" value="三钻"></el-option>
+          <el-option label="四钻" value="四钻"></el-option>
+          <el-option label="五钻" value="五钻"></el-option>
+        </el-select>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="formVisible = false">取 消</el-button>
+      <el-button type="primary" @click="confirmEdit">确 定</el-button>
+    </div>
+  </el-dialog>
+</div>
+<script src="./js/vue.js"></script>
+<script src="./js/axios.min.js"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+  // 设置后台服务地址
+  axios.defaults.baseURL = "http://localhost:8099";
+  axios.defaults.timeout = 3000;
+
+  const app = new Vue({
+    el: "#app",
+    data: {
+      headers: [
+        {prop: "id", text: "ID", width: 120, align: "center"},
+        {prop: "name", text: "酒店名称", width: 0, align: "center"},
+        {prop: "brand", text: "酒店品牌", width: 120, align: "center"},
+        {prop: "price", text: "酒店价格", width: 120, align: "center"},
+        {prop: "business", text: "所在商圈", width: 220, align: "center"}
+      ],
+      hotels: [],
+      total: 1000,
+      formVisible: false, // 是否显示表单
+      formLabelWidth: "100px", // 表单label宽度
+      hotel: {}, // 表单中的酒店数据
+      isEdit: false, // 是否是更新
+      lastPage: 1,// 上一次查询的页码
+    },
+    created() {
+      this.query(1);
+    },
+    methods: {
+      beginAdd(){
+        this.isEdit = false;
+        this.hotel = {};
+        this.formVisible = true;
+      },
+      query(page){
+        this.lastPage = page;
+        axios.get("/hotel/list", {
+            params: {
+              page: page, size: 5
+            }
+          })
+          .then(resp => {
+            this.hotels = resp.data.hotels;
+            this.total = resp.data.total;
+          })
+          .catch(err => console.log(err));
+      },
+      handleEdit(v1, v2) {
+        this.isEdit = true;
+        this.hotel = JSON.parse(JSON.stringify(v2));
+        this.formVisible = true;
+      },
+      handleDelete(v1, v2) {
+        this.$confirm('此操作将永久删除酒店信息, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.deleteById(v2.id);
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
+      confirmEdit(){
+        if(this.isEdit){
+          axios.put("/hotel", this.hotel)
+            .then(resp => {
+              this.$message({
+                message: '更新成功',
+                type: 'success'
+              });
+              this.formVisible = false;
+              this.reload();
+            })
+            .catch(err => {
+              this.$message({
+                message: '更新失败',
+                type: 'error'
+              });
+              console.log(err);
+            })
+        }else{
+          axios.post("/hotel", this.hotel)
+            .then(resp => {
+              this.$message({
+                message: '新增成功',
+                type: 'success'
+              });
+              this.formVisible = false;
+              this.reload();
+            })
+            .catch(err => {
+              this.$message({
+                message: '新增失败',
+                type: 'error'
+              });
+              console.log(err);
+            })
+        }
+
+      },
+      deleteById(id){
+        axios.delete("/hotel/" + id)
+        .then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+          this.reload();
+        })
+        .catch(err => {
+          this.$message({
+            type: 'error',
+            message: '删除失败!'
+          });
+          console.log(err);
+        })
+      },
+      reload(){
+        this.query(this.lastPage);
+      }
+    }
+  })
+</script>
+</body>
+</html>
